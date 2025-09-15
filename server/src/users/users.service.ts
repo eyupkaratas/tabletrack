@@ -1,20 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 
 import { db } from 'src/db';
-import { users } from '../db/schema'; // tek schema.ts kullandığın için buradan import
+import { users } from '../db/schema';
+
+const withoutPassword = <T extends { password?: unknown }>(u: T) => {
+  const { password, ...rest } = u as any;
+  return rest;
+};
 
 @Injectable()
 export class UsersService {
   async findAll() {
-    return db.select().from(users);
+    const rows = await db.select().from(users);
+    return rows.map(withoutPassword); // ← sadece burada değişti
   }
 
   async findOne(id: string) {
     const [u] = await db.select().from(users).where(eq(users.id, id)).limit(1);
     if (!u) throw new NotFoundException('User not found');
-    return u;
+    return withoutPassword(u); // ← burada
+  }
+
+  // Auth için password lazım olduğundan olduğu gibi kalsın
+  async findByEmail(email: string) {
+    const result = await db.select().from(users).where(eq(users.email, email));
+    // console.log('DEBUG findByEmail result:', result);
+    return result[0] ?? null;
   }
 
   async create(payload: {
@@ -28,7 +41,7 @@ export class UsersService {
       .insert(users)
       .values({ ...payload, password: hashed })
       .returning();
-    return created;
+    return withoutPassword(created); // ← burada
   }
 
   async update(
@@ -49,7 +62,7 @@ export class UsersService {
       .where(eq(users.id, id))
       .returning();
     if (!updated) throw new NotFoundException('User not found');
-    return updated;
+    return withoutPassword(updated); // ← burada
   }
 
   async remove(id: string) {
@@ -58,6 +71,6 @@ export class UsersService {
       .where(eq(users.id, id))
       .returning();
     if (!deleted) throw new NotFoundException('User not found');
-    return deleted;
+    return withoutPassword(deleted); // ← burada
   }
 }
