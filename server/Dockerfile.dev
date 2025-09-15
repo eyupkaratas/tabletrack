@@ -1,0 +1,14 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN pnpm install
+
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+COPY . .
+
+CMD ["pnpm", "start:dev"]
