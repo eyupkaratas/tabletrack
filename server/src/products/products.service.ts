@@ -3,49 +3,52 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq, ilike, SQL } from 'drizzle-orm';
 import { db } from 'src/db';
 import { products } from '../db/schema';
 import { CreateProductDto } from './dto/create-product.dto';
 
+type FindFilters = {
+  category?: string;
+  name?: string;
+  price?: string;
+};
+
 @Injectable()
 export class ProductsService {
-  async findAll() {
-    const rows = await db.select().from(products);
-    return rows;
+  async find(filters: FindFilters) {
+    const conds: (SQL | undefined)[] = [];
+
+    if (filters.category) {
+      conds.push(eq(products.category, filters.category));
+    }
+
+    if (filters.name) {
+      conds.push(ilike(products.name, `%${filters.name}%`));
+    }
+
+    if (filters.price) {
+      const p = Number(filters.price);
+      if (!Number.isFinite(p)) {
+      } else {
+        conds.push(eq(products.price, p.toFixed(2)));
+      }
+    }
+
+    const where = conds.length ? and(...conds) : undefined;
+
+    return db.select().from(products).where(where).limit(200);
   }
 
   async findOne(id: string) {
-    const [p] = await db
+    const [row] = await db
       .select()
       .from(products)
       .where(eq(products.id, id))
       .limit(1);
-    if (!p) throw new NotFoundException('Product not found');
-    return [p];
-  }
-  async findByName(name: string) {
-    const result = await db
-      .select()
-      .from(products)
-      .where(eq(products.name, name))
-      .limit(1);
-    if (!result)
-      throw new NotFoundException(
-        'Product with the given name does not exist.',
-      );
-    return result;
-  }
-  async findByCategory(category: string) {
-    const result = await db
-      .select()
-      .from(products)
-      .where(eq(products.category, category));
-    if (!category)
-      throw new NotFoundException(
-        'Category with the given name does not exist',
-      );
-    return result;
+
+    if (!row) throw new NotFoundException('Product not found');
+    return row;
   }
 
   async create(payload: CreateProductDto) {

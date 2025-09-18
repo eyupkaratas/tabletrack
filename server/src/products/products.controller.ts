@@ -4,8 +4,10 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -16,23 +18,17 @@ export class ProductsController {
   constructor(private readonly svc: ProductsService) {}
 
   @Get()
-  findAll() {
-    return this.svc.findAll();
+  find(
+    @Query('category') category?: string,
+    @Query('name') name?: string,
+    @Query('price') price?: string,
+  ) {
+    return this.svc.find({ category, name, price });
   }
 
-  @Get('id/:id')
-  findOne(@Param('id') id: string) {
+  @Get(':id')
+  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.svc.findOne(id);
-  }
-
-  @Get('name/:name')
-  findbyName(@Param('name') name: string) {
-    return this.svc.findByName(name);
-  }
-
-  @Get('category/:category')
-  findbyCategory(@Param('category') name: string) {
-    return this.svc.findByCategory(name);
   }
 
   @Post()
@@ -40,13 +36,16 @@ export class ProductsController {
     return this.svc.create(dto);
   }
 
-  @Patch('id/:id')
-  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+  @Patch(':id')
+  update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateProductDto,
+  ) {
     return this.svc.update(id, dto);
   }
 
-  @Delete('id/:id')
-  remove(@Param('id') id: string) {
+  @Delete(':id')
+  remove(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.svc.remove(id);
   }
 }
