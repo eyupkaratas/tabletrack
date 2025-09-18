@@ -14,16 +14,15 @@ const withoutPassword = <T extends { password?: unknown }>(u: T) => {
 export class UsersService {
   async findAll() {
     const rows = await db.select().from(users);
-    return rows.map(withoutPassword); // ← sadece burada değişti
+    return rows.map(withoutPassword);
   }
 
   async findOne(id: string) {
     const [u] = await db.select().from(users).where(eq(users.id, id)).limit(1);
     if (!u) throw new NotFoundException('User not found');
-    return withoutPassword(u); // ← burada
+    return withoutPassword(u);
   }
 
-  // Auth için password lazım olduğundan olduğu gibi kalsın
   async findByEmail(email: string) {
     const result = await db.select().from(users).where(eq(users.email, email));
     // console.log('DEBUG findByEmail result:', result);
@@ -41,7 +40,7 @@ export class UsersService {
       .insert(users)
       .values({ ...payload, password: hashed })
       .returning();
-    return withoutPassword(created); // ← burada
+    return withoutPassword(created);
   }
 
   async update(
@@ -62,7 +61,7 @@ export class UsersService {
       .where(eq(users.id, id))
       .returning();
     if (!updated) throw new NotFoundException('User not found');
-    return withoutPassword(updated); // ← burada
+    return withoutPassword(updated);
   }
 
   async remove(id: string) {
@@ -71,6 +70,6 @@ export class UsersService {
       .where(eq(users.id, id))
       .returning();
     if (!deleted) throw new NotFoundException('User not found');
-    return withoutPassword(deleted); // ← burada
+    return withoutPassword(deleted);
   }
 }

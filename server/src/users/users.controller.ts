@@ -20,7 +20,7 @@ export class UsersController {
     return this.svc.findAll();
   }
 
-  @Get('id/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.svc.findOne(id);
   }
@@ -30,12 +30,12 @@ export class UsersController {
     return this.svc.create(dto);
   }
 
-  @Patch('id/:id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.svc.update(id, dto);
   }
 
-  @Delete('id/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.svc.remove(id);
   }
