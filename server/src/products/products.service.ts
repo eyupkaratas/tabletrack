@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { db } from 'src/db';
 import { products } from '../db/schema';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -43,10 +44,10 @@ export class ProductsService {
     return result;
   }
 
-  async create(payload: { name: string; category: string; price; number }) {
+  async create(payload: CreateProductDto) {
     const [created] = await db
       .insert(products)
-      .values({ ...payload })
+      .values({ ...payload, price: toString() })
       .returning();
     return [created];
   }
