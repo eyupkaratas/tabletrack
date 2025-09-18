@@ -20,17 +20,17 @@ export class ProductsController {
     return this.svc.findAll();
   }
 
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id') id: string) {
     return this.svc.findOne(id);
   }
 
-  @Get(':name')
+  @Get('name/:name')
   findbyName(@Param('name') name: string) {
     return this.svc.findByName(name);
   }
 
-  @Get(':category')
+  @Get('category/:category')
   findbyCategory(@Param('category') name: string) {
     return this.svc.findByCategory(name);
   }
@@ -40,12 +40,12 @@ export class ProductsController {
     return this.svc.create(dto);
   }
 
-  @Patch(':id')
+  @Patch('id/:id')
   update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
-    return this.svc.update.apply(id, dto);
+    return this.svc.update(id, dto);
   }
 
-  @Delete(':id')
+  @Delete('id/:id')
   remove(@Param('id') id: string) {
     return this.svc.remove(id);
   }

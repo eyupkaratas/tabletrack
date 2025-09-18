@@ -11,8 +11,8 @@ export class UpdateProductDto {
   category?: string;
 
   @IsOptional()
-  @IsNumber()
   @Type(() => Number)
+  @IsNumber()
   price?: number;
 
   @IsOptional()
