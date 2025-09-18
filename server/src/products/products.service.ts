@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { db } from 'src/db';
 import { products } from '../db/schema';
@@ -47,8 +51,13 @@ export class ProductsService {
   async create(payload: CreateProductDto) {
     const [created] = await db
       .insert(products)
-      .values({ ...payload, price: toString() })
+      .values({ ...payload, price: payload.price.toString() })
+      .onConflictDoNothing({ target: products.name })
       .returning();
+    if (!created)
+      throw new ConflictException(
+        'A product with the same name already exists.',
+      );
     return [created];
   }
   async update(

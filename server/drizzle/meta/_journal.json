@@ -8,6 +8,13 @@
       "when": 1757899694470,
       "tag": "0000_outgoing_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758158204442,
+      "tag": "0001_slimy_shooting_star",
+      "breakpoints": true
     }
   ]
 }

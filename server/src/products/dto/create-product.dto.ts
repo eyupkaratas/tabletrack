@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, Min } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -8,7 +8,8 @@ export class CreateProductDto {
   @IsString()
   category!: string;
 
-  @IsNumber()
   @Type(() => Number)
-  price!: number;
+  @IsNumber()
+  @Min(0)
+  price: number;
 }

@@ -45,7 +45,7 @@ export class ProductsController {
     return this.svc.update.apply(id, dto);
   }
 
-  @Delete('id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.svc.remove(id);
   }
