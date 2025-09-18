@@ -3,10 +3,8 @@ services:
     image: postgres:17
     container_name: tabletrack_db
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tabletrack
+    env_file:
+      - ./server/.env
     ports:
       - "5432:5432"
     volumes:
@@ -24,11 +22,11 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/tabletrack
-    command: sh -c "/wait-for-it.sh db:5432 -- pnpm db:generate && pnpm db:migrate && pnpm start:dev"
-
-
+    env_file:
+      - ./server/.env
+    command: >
+      sh -c "/wait-for-it.sh db:5432 --
+      pnpm db:generate && pnpm db:migrate && pnpm start:dev"
 
   client:
     build:
@@ -42,8 +40,7 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+    
 
 volumes:
   db_data:
