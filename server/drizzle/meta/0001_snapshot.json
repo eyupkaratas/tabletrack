@@ -1,6 +1,6 @@
 {
-  "id": "1708e92c-149a-43f8-9420-6c2e7413bc46",
-  "prevId": "eaf150c6-eb1a-44e7-8d8d-db130cc72778",
+  "id": "8892816b-143e-4e99-b463-88868ee76ebb",
+  "prevId": "74dfb91e-bc39-4aae-ac36-09b358184bf2",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -27,18 +27,38 @@
           "primaryKey": false,
           "notNull": true
         },
-        "quantity": {
-          "name": "quantity",
+        "qty": {
+          "name": "qty",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": 1
+          "notNull": true
         },
-        "price": {
-          "name": "price",
+        "unit_price": {
+          "name": "unit_price",
           "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "item_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'placed'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "served_at": {
+          "name": "served_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -93,12 +113,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
         "status": {
           "name": "status",
           "type": "order_status",
@@ -107,12 +121,31 @@
           "notNull": true,
           "default": "'open'"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "now()"
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
         }
       },
       "indexes": {},
@@ -293,13 +326,18 @@
           "name": "number",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "tables_number_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "status": {
           "name": "status",
@@ -320,7 +358,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "tables_number_unique": {
+          "name": "tables_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "number"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -388,6 +434,16 @@
     }
   },
   "enums": {
+    "public.item_status": {
+      "name": "item_status",
+      "schema": "public",
+      "values": [
+        "placed",
+        "preparing",
+        "served",
+        "cancelled"
+      ]
+    },
     "public.order_status": {
       "name": "order_status",
       "schema": "public",
@@ -418,8 +474,7 @@
       "schema": "public",
       "values": [
         "available",
-        "occupied",
-        "paid"
+        "active"
       ]
     }
   },

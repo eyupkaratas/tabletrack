@@ -24,16 +24,11 @@ export const users = pgTable('users', {
     .notNull(),
 });
 
-export const tableStatusEnum = pgEnum('table_status', [
-  'available',
-  'occupied',
-  'paid',
-]);
+export const tableStatusEnum = pgEnum('table_status', ['available', 'active']);
 
 export const tables = pgTable('tables', {
   id: uuid('id').defaultRandom().primaryKey(),
-  number: integer('number').notNull(),
-  name: text('name'),
+  number: integer('number').generatedByDefaultAsIdentity().notNull().unique(),
   status: tableStatusEnum('status').notNull().default('available'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
@@ -57,23 +52,25 @@ export const products = pgTable(
   }),
 );
 
-export const orderStatusEnum = pgEnum('order_status', ['open', 'closed']);
+export const orderStatus = pgEnum('order_status', ['open', 'closed']);
+export const orderItemStatus = pgEnum('item_status', [
+  'placed',
+  'served',
+  'cancelled',
+]);
 
 export const orders = pgTable('orders', {
   id: uuid('id').defaultRandom().primaryKey(),
   tableId: uuid('table_id')
     .references(() => tables.id)
     .notNull(),
-  userId: uuid('user_id')
+  orderStatus: orderStatus('order_status').default('open').notNull(),
+  openedByUserId: uuid('user_id')
     .references(() => users.id)
     .notNull(),
-  status: orderStatusEnum('status').notNull().default('open'),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  closedAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  closedAt: timestamp('closed_at'),
+  total: numeric('total', { precision: 10, scale: 2 }).default('0'),
 });
 
 export const orderItems = pgTable('order_items', {
@@ -84,8 +81,11 @@ export const orderItems = pgTable('order_items', {
   productId: uuid('product_id')
     .references(() => products.id)
     .notNull(),
-  quantity: integer('quantity').notNull().default(1),
-  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
+  quantity: integer('quantity').notNull(),
+  unitPrice: numeric('unit_price', { precision: 10, scale: 2 }).notNull(),
+  orderItemStatus: orderItemStatus('item_status').default('placed').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  servedAt: timestamp('served_at', { withTimezone: true }),
 });
 
 export const paymentMethodEnum = pgEnum('payment_method', ['cash', 'card']);
@@ -97,5 +97,5 @@ export const payments = pgTable('payments', {
     .notNull(),
   amount: numeric('amount', { precision: 10, scale: 2 }).notNull(),
   method: paymentMethodEnum('method').notNull(),
-  paidAt: timestamp('paid_at').default(sql`now()`),
+  paidAt: timestamp('paid_at', { withTimezone: true }).default(sql`now()`),
 });

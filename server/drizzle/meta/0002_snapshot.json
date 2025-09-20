@@ -1,6 +1,6 @@
 {
-  "id": "74dfb91e-bc39-4aae-ac36-09b358184bf2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "2af0af3e-aa38-42c6-895e-75117f717239",
+  "prevId": "8892816b-143e-4e99-b463-88868ee76ebb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -31,14 +31,34 @@
           "name": "quantity",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": 1
+          "notNull": true
         },
-        "price": {
-          "name": "price",
+        "unit_price": {
+          "name": "unit_price",
           "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "item_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'placed'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "served_at": {
+          "name": "served_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -93,12 +113,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
         "status": {
           "name": "status",
           "type": "order_status",
@@ -107,19 +121,31 @@
           "notNull": true,
           "default": "'open'"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "now()"
         },
         "closed_at": {
           "name": "closed_at",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+          "notNull": false
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
         }
       },
       "indexes": {},
@@ -408,6 +434,15 @@
     }
   },
   "enums": {
+    "public.item_status": {
+      "name": "item_status",
+      "schema": "public",
+      "values": [
+        "placed",
+        "served",
+        "cancelled"
+      ]
+    },
     "public.order_status": {
       "name": "order_status",
       "schema": "public",
