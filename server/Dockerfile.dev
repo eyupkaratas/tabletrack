@@ -11,4 +11,4 @@ RUN chmod +x /wait-for-it.sh
 
 COPY . .
 
-CMD ["pnpm", "start:dev"]
+CMD ["pnpm", "start:docker"]
