@@ -87,6 +87,7 @@ export class TablesService {
   }
 
   async getTableWithOrders(number: number) {
+    // masa
     const [tbl] = await db
       .select()
       .from(tables)
@@ -95,21 +96,21 @@ export class TablesService {
 
     if (!tbl) throw new NotFoundException('Masa bulunamadı');
 
+    // o masaya ait tüm orderlar
     const ords = await db
       .select()
       .from(orders)
       .where(eq(orders.tableId, tbl.id))
       .orderBy(desc(orders.createdAt));
 
-    console.log('ORDERS:', ords);
-
     if (!ords.length) {
       return { ...tbl, orders: [] };
     }
 
+    // order idleri
     const ordIds = ords.map((o) => o.id);
-    console.log('ORDER IDS:', ordIds);
 
+    // itemler + ürün bilgileri
     const items = await db
       .select({
         orderId: orderItems.orderId,
@@ -123,14 +124,14 @@ export class TablesService {
       .where(inArray(orderItems.orderId, ordIds))
       .leftJoin(products, eq(products.id, orderItems.productId));
 
-    console.log('ITEMS:', items);
-
+    // order bazlı gruplama
     const grouped: Record<string, any[]> = {};
     for (const it of items) {
       if (!grouped[it.orderId]) grouped[it.orderId] = [];
       grouped[it.orderId].push(it);
     }
 
+    // orderlara itemleri ekle + total hesapla
     const enriched = ords.map((o) => {
       const its = grouped[o.id] ?? [];
       const total = its.reduce(
