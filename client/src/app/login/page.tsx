@@ -10,10 +10,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoginFormValues, loginSchema } from "@/types";
+import { getDecodedUser } from "@/utils/decodeToken";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -46,10 +48,15 @@ const LoginPage = () => {
 
       localStorage.setItem("token", result.access_token);
 
-      router.push("/dashboard"); //TODO
+      const decoded = getDecodedUser();
+      console.log("Login decoded:", decoded);
+
+      router.push("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Login failed");
+      toast.error("Login failed", {
+        description: "Incorrect email or password.",
+      });
     } finally {
       setLoading(false);
     }

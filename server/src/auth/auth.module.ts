@@ -11,8 +11,8 @@ import { JwtStrategy } from './jwt.strategy';
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: 'supersecretkey', // TODO: .env dosyasına taşı
-      signOptions: { expiresIn: '1h' },
+      secret: process.env.JWT_SECRET!,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
   ],
   controllers: [AuthController],
