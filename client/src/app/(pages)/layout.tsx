@@ -39,9 +39,7 @@ export default async function DashLayout({
           <main className="w-full relative">
             <Navbar />
             <div className="mx-auto p-4 sm:px-0 sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-6xl relative">
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-sm border border-white/20 dark:border-gray-800/20 p-6">
-                {children}
-              </div>
+              {children}
             </div>
           </main>
         </SidebarProvider>

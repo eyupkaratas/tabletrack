@@ -7,10 +7,20 @@ import {
 import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from 'src/db';
 import { orderItems, orders, products, tables, users } from 'src/db/schema';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { OpenOrderDto } from './dto/open-order.dto';
 
 @Injectable()
 export class OrdersService {
+  constructor(private readonly notifications: NotificationsGateway) {}
+  async getOpenCount(): Promise<number> {
+    const [row] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(orders)
+      .where(eq(orders.orderStatus, 'open'));
+    return row.count;
+  }
+
   async open(dto: OpenOrderDto) {
     const { tableId, openedByUserId, items } = dto;
 
@@ -19,7 +29,8 @@ export class OrdersService {
     if (!Array.isArray(items) || items.length === 0)
       throw new BadRequestException('items required');
 
-    return await db.transaction(async (tx) => {
+    // transaction ile order + items kaydı
+    const result = await db.transaction(async (tx) => {
       // masa
       const [tbl] = await tx
         .select({ id: tables.id, number: tables.number })
@@ -116,5 +127,32 @@ export class OrdersService {
         })),
       };
     });
+
+    const openCount = await this.getOpenCount();
+    this.notifications.sendOpenCount(openCount);
+
+    return result;
+  }
+  async close(orderId: string) {
+    // check order
+    const [ord] = await db
+      .select({ id: orders.id })
+      .from(orders)
+      .where(eq(orders.id, orderId))
+      .limit(1);
+
+    if (!ord) throw new NotFoundException('Order not found!');
+
+    // close order
+    await db
+      .update(orders)
+      .set({ orderStatus: 'closed' })
+      .where(eq(orders.id, orderId));
+
+    // aktif sipariş sayısını güncelle ve frontend'e gönder
+    const openCount = await this.getOpenCount();
+    this.notifications.sendOpenCount(openCount);
+
+    return { message: 'Order closed successfully', orderId };
   }
 }

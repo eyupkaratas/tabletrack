@@ -1,21 +1,24 @@
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
   return (
-    <nav className="flex items-center justify-between px-4 py-2 sticky top-0 border-b shadow-sm z-50 flex-col sm:flex-row">
+    <nav className="flex items-center justify-between px-4 py-2.5 sticky top-0 border-b shadow-sm z-50 flex-col sm:flex-row">
       {/* SOL */}
-      <div className="w-full sm:w-1/3 text-left mb-2 sm:mb-0">
+      <div className="w-full sm:w-1/3 flex justify-start ">
         <SidebarTrigger />
       </div>
 
       {/* ORTA */}
-      <div className="w-full sm:w-1/3 text-center mb-2 sm:mb-0">Tabletrack</div>
+      <div className="w-full sm:w-1/3 flex justify-center">Tabletrack</div>
 
       {/* SAĞ */}
-      <div className="w-full sm:w-1/3 text-right">
+      <div className="w-full sm:w-1/3 flex justify-end items-center gap-2 cursor-pointer">
         <ThemeToggle />
-        Sağ
+        <Button variant="destructive" className="cursor-pointer">
+          Logout
+        </Button>
       </div>
     </nav>
   );
