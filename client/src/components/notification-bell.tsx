@@ -13,11 +13,11 @@ export function NotificationBell() {
       .then((n) => setCount(n))
       .catch(() => {});
     socket.on("connect", () => {
-      console.log("✅ Socket connected:", socket.id);
+      console.log("Socket connected:", socket.id);
     });
 
     socket.on("openCount", (n: number) => {
-      console.log("📥 openCount event geldi:", n);
+      console.log("openCount event:", n);
       setCount(n);
     });
 

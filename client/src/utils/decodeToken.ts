@@ -1,5 +1,3 @@
-import { jwtDecode } from "jwt-decode";
-
 export type JwtPayload = {
   sub: string;
   name: string;
@@ -7,15 +5,17 @@ export type JwtPayload = {
   role: string;
 };
 
-export function getDecodedUser() {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  if (!token) return null; //Tarayıcı token, server null
-
+export async function getDecodedUser(): Promise<JwtPayload | null> {
   try {
-    return jwtDecode<JwtPayload>(token);
+    const res = await fetch("http://localhost:3001/auth/me", {
+      credentials: "include",
+    });
+
+    if (!res.ok) return null;
+
+    return (await res.json()) as JwtPayload;
   } catch (err) {
-    console.error("Invalid token:", err);
+    console.error("Failed to fetch user:", err);
     return null;
   }
 }

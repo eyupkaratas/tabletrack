@@ -21,12 +21,27 @@ export class AuthService {
   }
 
   async login(user: any) {
+    console.log('Login payload user:', user); // tekrar logla
+
     const payload = {
       sub: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
     };
-    return { access_token: await this.jwtService.signAsync(payload) };
+
+    return { access_token: this.jwtService.sign(payload) };
+  }
+  async getProfile(userId: string) {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
   }
 }

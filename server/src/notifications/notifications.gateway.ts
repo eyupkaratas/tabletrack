@@ -17,7 +17,7 @@ export class NotificationsGateway implements OnGatewayInit {
   }
 
   sendOpenCount(count: number) {
-    console.log('🔔 Emitting openCount:', count);
+    console.log('Emitting openCount:', count);
     this.server.emit('openCount', count);
   }
 }

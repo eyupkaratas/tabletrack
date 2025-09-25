@@ -1,17 +1,46 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './jwt.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.password,
-    );
-    return this.authService.login(user);
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // 1) Kullanıcıyı doğrula
+    const user = await this.authService.validateUser(body.email, body.password);
+
+    // 2) Token üret
+    const token = await this.authService.login(user);
+
+    // 3) Cookie set et
+    res.cookie('token', token.access_token, {
+      httpOnly: true,
+      secure: false, // prod’da true (HTTPS)
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60, // 1 saat
+    });
+
+    return { message: 'Login successful' };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Req() req) {
+    return this.authService.getProfile(req.user.sub);
   }
 }

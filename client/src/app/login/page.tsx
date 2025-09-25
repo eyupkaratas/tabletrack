@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoginFormValues, loginSchema } from "@/types";
-import { getDecodedUser } from "@/utils/decodeToken";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,6 +36,7 @@ const LoginPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -45,11 +45,6 @@ const LoginPage = () => {
 
       const result = await res.json();
       console.log("Login success:", result);
-
-      localStorage.setItem("token", result.access_token);
-
-      const decoded = getDecodedUser();
-      console.log("Login decoded:", decoded);
 
       router.push("/dashboard");
     } catch (err) {
@@ -61,9 +56,10 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-500 via-black to-red-700">
-      <Card className="w-full max-w-sm ">
+      <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Staff Login</CardTitle>
           <CardDescription>Staff-only login for TableTrack</CardDescription>
@@ -75,26 +71,19 @@ const LoginPage = () => {
           >
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                {...register("email")}
-              />{" "}
+              <Input id="email" type="email" required {...register("email")} />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
                 required
                 {...register("password")}
-              />{" "}
+              />
               {errors.password && (
                 <p className="text-sm text-red-500">
                   {errors.password.message}

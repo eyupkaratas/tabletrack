@@ -24,9 +24,19 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    const result = await db.select().from(users).where(eq(users.email, email));
-    // console.log('DEBUG findByEmail result:', result);
-    return result[0] ?? null;
+    const [user] = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        password: users.password,
+      })
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    return user ?? null;
   }
 
   async create(payload: {
