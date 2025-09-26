@@ -21,13 +21,13 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // 1) Kullanıcıyı doğrula
+    // Kullanıcıyı doğrula
     const user = await this.authService.validateUser(body.email, body.password);
 
-    // 2) Token üret
+    //Token üret
     const token = await this.authService.login(user);
 
-    // 3) Cookie set et
+    //Cookie set et
     res.cookie('token', token.access_token, {
       httpOnly: true,
       secure: false, // prod’da true (HTTPS)

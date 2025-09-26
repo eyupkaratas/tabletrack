@@ -12,11 +12,13 @@ import {
 } from "@/components/ui/sidebar";
 import { getDecodedUser, JwtPayload } from "@/utils/decodeToken";
 import { LayoutGrid, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NotificationBell } from "./notification-bell";
 import { Label } from "./ui/label";
 
 export default function AppSidebar() {
+  const router = useRouter();
   const [user, setUser] = useState<JwtPayload | null>(null);
 
   useEffect(() => {
@@ -44,11 +46,17 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>
-        <SidebarMenuButton className="cursor-pointer">
+        <SidebarMenuButton
+          onClick={() => router.push("/orders")}
+          className="cursor-pointer"
+        >
           <NotificationBell />
           <p className="group-data-[state=collapsed]:hidden">Orders</p>
         </SidebarMenuButton>
-        <SidebarMenuButton className="cursor-pointer">
+        <SidebarMenuButton
+          onClick={() => router.push("/tables")}
+          className="cursor-pointer"
+        >
           <LayoutGrid className="w-7 h-7" strokeWidth={2} />
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
         </SidebarMenuButton>

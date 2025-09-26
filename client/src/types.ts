@@ -6,3 +6,37 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
+/* 
+export type Table = {
+  id: string;
+  number: number;
+  status: string;
+}; */
+
+export type TableWithOrders = {
+  id: string;
+  number: number;
+  status: string;
+  createdAt: string;
+  orders: Order[];
+};
+
+export type TableCardContentProps = {
+  table: TableWithOrders;
+  onClose: () => void;
+};
+
+export type OrderItem = {
+  productName: string;
+  quantity: number;
+  unitPrice: string;
+  status: string;
+};
+
+export type Order = {
+  id: string;
+  orderStatus: string;
+  createdAt: string;
+  total: number;
+  items: OrderItem[];
+};

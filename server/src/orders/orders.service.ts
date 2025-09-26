@@ -146,7 +146,7 @@ export class OrdersService {
     // close order
     await db
       .update(orders)
-      .set({ orderStatus: 'closed' })
+      .set({ orderStatus: 'closed', closedAt: new Date() })
       .where(eq(orders.id, orderId));
 
     // aktif sipariş sayısını güncelle ve frontend'e gönder

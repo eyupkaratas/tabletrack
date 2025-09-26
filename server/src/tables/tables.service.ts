@@ -4,14 +4,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { desc, eq, inArray, sql } from 'drizzle-orm';
+import { asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from 'src/db';
 import { orderItems, orders, products, tables } from 'src/db/schema';
 
 @Injectable()
 export class TablesService {
   async findAll() {
-    return db.select().from(tables).orderBy(desc(tables.number));
+    return db.select().from(tables).orderBy(asc(tables.number));
   }
 
   async findByNumber(number: number) {

@@ -21,8 +21,6 @@ export class AuthService {
   }
 
   async login(user: any) {
-    console.log('Login payload user:', user); // tekrar logla
-
     const payload = {
       sub: user.id,
       name: user.name,

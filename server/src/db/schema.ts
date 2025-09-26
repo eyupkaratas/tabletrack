@@ -69,7 +69,7 @@ export const orders = pgTable('orders', {
     .references(() => users.id)
     .notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  closedAt: timestamp('closed_at'),
+  closedAt: timestamp('closed_at', { withTimezone: true }).defaultNow(),
   total: numeric('total', { precision: 10, scale: 2 }).default('0'),
 });
 
@@ -85,7 +85,7 @@ export const orderItems = pgTable('order_items', {
   unitPrice: numeric('unit_price', { precision: 10, scale: 2 }).notNull(),
   orderItemStatus: orderItemStatus('item_status').default('placed').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  servedAt: timestamp('served_at', { withTimezone: true }),
+  servedAt: timestamp('served_at', { withTimezone: true }).defaultNow(),
 });
 
 export const paymentMethodEnum = pgEnum('payment_method', ['cash', 'card']);
