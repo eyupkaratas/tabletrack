@@ -1,4 +1,3 @@
-// src/orders/orders.service.ts
 import {
   BadRequestException,
   Injectable,
@@ -149,10 +148,34 @@ export class OrdersService {
       .set({ orderStatus: 'closed', closedAt: new Date() })
       .where(eq(orders.id, orderId));
 
-    // aktif sipariş sayısını güncelle ve frontend'e gönder
+    // aktif sipariş sayısını güncelle ve frontende gönder
     const openCount = await this.getOpenCount();
     this.notifications.sendOpenCount(openCount);
 
     return { message: 'Order closed successfully', orderId };
+  }
+
+  async updateOrderItemStatus(
+    orderItemId: string,
+    status: 'placed' | 'served' | 'cancelled',
+  ) {
+    // check orderItem
+    const [ordIt] = await db
+      .select({ id: orderItems.id })
+      .from(orderItems)
+      .where(eq(orderItems.id, orderItemId))
+      .limit(1);
+
+    if (!ordIt) throw new NotFoundException('OrderItem not found!');
+    // update orderItem status
+    const [updated] = await db
+      .update(orderItems)
+      .set({ orderItemStatus: status })
+      .where(eq(orderItems.id, orderItemId))
+      .returning();
+    return {
+      message: 'OrderItem status updated successfully',
+      orderItem: updated,
+    };
   }
 }

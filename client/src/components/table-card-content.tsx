@@ -74,7 +74,18 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                           className="flex justify-between py-2 text-sm"
                         >
                           <span>
-                            {item.productName} × {item.quantity}
+                            {item.productName} × {item.quantity}{" "}
+                            <button
+                              className={`text-xs hover:cursor-pointer ${
+                                item.status == "placed"
+                                  ? "text-yellow-500"
+                                  : item.status === "served"
+                                  ? "text-green-500 "
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {item.status}
+                            </button>
                           </span>
                           <span>
                             {(Number(item.unitPrice) * item.quantity).toFixed(

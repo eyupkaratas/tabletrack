@@ -1,6 +1,14 @@
-// src/orders/orders.controller.ts
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { OpenOrderDto } from './dto/open-order.dto';
+import { UpdateOrderItemStatusDto } from './dto/update-order-item-status.dto';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -19,8 +27,11 @@ export class OrdersController {
   async close(@Body('orderId') orderId: string) {
     return this.svc.close(orderId);
   }
+  @Put('/order-items/:id/status')
+  async updateOrderItemStatus(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateOrderItemStatusDto,
+  ) {
+    return this.svc.updateOrderItemStatus(id, dto.status);
+  }
 }
-/* @Get('table/:tableId')
-  viewTable(@Param('tableId') tableId: string) {
-    return this.svc.viewTable(tableId);
-  } */

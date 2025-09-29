@@ -52,7 +52,11 @@ export const products = pgTable(
   }),
 );
 
-export const orderStatus = pgEnum('order_status', ['open', 'closed']);
+export const orderStatus = pgEnum('order_status', [
+  'open',
+  'completed',
+  'closed',
+]);
 export const orderItemStatus = pgEnum('item_status', [
   'placed',
   'served',
@@ -84,8 +88,8 @@ export const orderItems = pgTable('order_items', {
   quantity: integer('quantity').notNull(),
   unitPrice: numeric('unit_price', { precision: 10, scale: 2 }).notNull(),
   orderItemStatus: orderItemStatus('item_status').default('placed').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  servedAt: timestamp('served_at', { withTimezone: true }).defaultNow(),
+  /* createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  servedAt: timestamp('served_at', { withTimezone: true }).defaultNow(), */
 });
 
 export const paymentMethodEnum = pgEnum('payment_method', ['cash', 'card']);
