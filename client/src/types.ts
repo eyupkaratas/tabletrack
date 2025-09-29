@@ -28,6 +28,8 @@ export type TableCardContentProps = {
 };
 
 export type OrderItem = {
+  id: string;
+  orderId: string;
   productName: string;
   quantity: number;
   unitPrice: string;

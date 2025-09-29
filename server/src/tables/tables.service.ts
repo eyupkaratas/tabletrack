@@ -121,7 +121,7 @@ export class TablesService {
       .from(orders)
       .leftJoin(users, eq(orders.openedByUserId, users.id))
       .where(eq(orders.tableId, tbl.id))
-      .orderBy(desc(orders.createdAt));
+      .orderBy(asc(orders.createdAt));
 
     if (!ords.length) {
       return { ...tbl, orders: [] };
@@ -133,6 +133,7 @@ export class TablesService {
     // itemler + ürün bilgileri
     const items = await db
       .select({
+        id: orderItems.id,
         orderId: orderItems.orderId,
         productId: orderItems.productId,
         quantity: orderItems.quantity,

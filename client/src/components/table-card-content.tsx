@@ -1,13 +1,14 @@
 import { TableCardContentProps } from "@/types";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [localTable, setLocalTable] = useState(table); // local state
   const pageSize = 3;
 
-  const openOrders = table.orders.filter(
+  const openOrders = localTable.orders.filter(
     (order) => order.orderStatus === "open"
   );
 
@@ -16,6 +17,41 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  const handleStatusChange = async (orderItemId: string, newStatus: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3001/orders/order-items/${orderItemId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to update status");
+      }
+
+      const data = await res.json();
+      console.log("Updated:", data);
+
+      // local state güncelle
+      setLocalTable((prev) => ({
+        ...prev,
+        orders: prev.orders.map((order) => ({
+          ...order,
+          items: order.items.map((item) =>
+            item.id === orderItemId ? { ...item, status: newStatus } : item
+          ),
+        })),
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
@@ -31,15 +67,15 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
         {/* masa başlığı */}
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            <span>Table-{table.number}</span>
+            <span>Table-{localTable.number}</span>
             <span
               className={`px-2 py-1 pr-4 rounded text-xs ${
-                table.status === "available"
-                  ? " text-green-500"
-                  : " text-yellow-500"
+                localTable.status === "available"
+                  ? "text-green-500"
+                  : "text-yellow-500"
               }`}
             >
-              {table.status.toUpperCase()}
+              {localTable.status.toUpperCase()}
             </span>
           </CardTitle>
         </CardHeader>
@@ -68,26 +104,57 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                   </CardHeader>
                   <CardContent>
                     <ul className="divide-y">
-                      {order.items.map((item, i) => (
+                      {order.items.map((item) => (
                         <li
-                          key={i}
+                          key={item.id}
                           className="flex justify-between py-2 text-sm"
                         >
                           <span>
                             {item.productName} × {item.quantity}{" "}
-                            <button
+                            <span
                               className={`text-xs hover:cursor-pointer ${
-                                item.status == "placed"
+                                item.status === "placed"
                                   ? "text-yellow-500"
                                   : item.status === "served"
-                                  ? "text-green-500 "
+                                  ? "text-green-500"
                                   : "text-red-500"
                               }`}
                             >
-                              {item.status}
-                            </button>
+                              {item.status.charAt(0).toUpperCase() +
+                                item.status.slice(1)}
+                            </span>
+                            {/* Status değiştirme butonu */}
+                            {item.status !== "served" && (
+                              <button
+                                onClick={() =>
+                                  handleStatusChange(item.id, "served")
+                                }
+                                className="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded cursor-pointer transition-transform duration-200 hover:scale-105 hover:bg-green-500/60"
+                              >
+                                <Check className="w-4 h-4" />
+                              </button>
+                            )}
+                            {/* Status değiştirme butonu */}
+                            {item.status !== "cancelled" && (
+                              <button
+                                onClick={() =>
+                                  handleStatusChange(item.id, "cancelled")
+                                }
+                                className="ml-2 px-2 py-1 text-xs bg-red-500 text-white rounded cursor-pointer transition-transform duration-200 hover:scale-105 hover:bg-red-500/60"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
                           </span>
-                          <span>
+
+                          {/* Sağda fiyat */}
+                          <span
+                            className={
+                              item.status === "cancelled"
+                                ? "line-through text-gray-400"
+                                : ""
+                            }
+                          >
                             {(Number(item.unitPrice) * item.quantity).toFixed(
                               2
                             )}
@@ -97,7 +164,16 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                       ))}
                     </ul>
                     <p className="text-right mt-2 font-bold">
-                      Total: {order.total}₺
+                      Total:{" "}
+                      {order.items
+                        .filter((item) => item.status !== "cancelled") // cancelled hariç
+                        .reduce(
+                          (sum, item) =>
+                            sum + Number(item.unitPrice) * item.quantity,
+                          0
+                        )
+                        .toFixed(2)}
+                      ₺
                     </p>
                   </CardContent>
                 </Card>
