@@ -26,6 +26,7 @@ const TablesPage = () => {
       console.error("Masa detayları alınamadı:", err);
     }
   };
+
   return (
     <div className="">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -43,7 +44,11 @@ const TablesPage = () => {
               <CardTitle>Table-{table.number}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Status: {table.status}</p>
+              {table.status === "available"
+                ? `Status: ${
+                    table.status.charAt(0).toUpperCase() + table.status.slice(1)
+                  }`
+                : `Open orders: ${table.openOrdersCount}`}
             </CardContent>
           </Card>
         ))}

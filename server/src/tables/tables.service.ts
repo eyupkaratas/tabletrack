@@ -6,12 +6,24 @@ import {
 } from '@nestjs/common';
 import { asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from 'src/db';
-import { orderItems, orders, products, tables } from 'src/db/schema';
+import { orderItems, orders, products, tables, users } from 'src/db/schema';
 
 @Injectable()
 export class TablesService {
   async findAll() {
-    return db.select().from(tables).orderBy(asc(tables.number));
+    return db
+      .select({
+        id: tables.id,
+        number: tables.number,
+        status: tables.status,
+        openOrdersCount: sql<number>`
+        count(${orders.id}) 
+        filter (where ${orders.orderStatus} = 'open')`.mapWith(Number),
+      })
+      .from(tables)
+      .leftJoin(orders, eq(orders.tableId, tables.id))
+      .groupBy(tables.id)
+      .orderBy(asc(tables.number));
   }
 
   async findByNumber(number: number) {
@@ -98,8 +110,16 @@ export class TablesService {
 
     // o masaya ait tüm orderlar
     const ords = await db
-      .select()
+      .select({
+        id: orders.id,
+        orderStatus: orders.orderStatus,
+        createdAt: orders.createdAt,
+        closedAt: orders.closedAt,
+        openedByUserId: orders.openedByUserId,
+        waiterName: users.name,
+      })
       .from(orders)
+      .leftJoin(users, eq(orders.openedByUserId, users.id))
       .where(eq(orders.tableId, tbl.id))
       .orderBy(desc(orders.createdAt));
 

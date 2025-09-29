@@ -38,6 +38,11 @@ export class AuthController {
 
     return { message: 'Login successful' };
   }
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token'); // token cookiesini sil / daha güvenli yol için token dbde tutulup logoutta revoked olarak işaretlenebilir fakat bu proje için gereksiz
+    return { message: 'Logged out successfully' };
+  }
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Req() req) {

@@ -41,7 +41,7 @@ export class OrdersService {
 
       // kullanıcı
       const [usr] = await tx
-        .select({ id: users.id })
+        .select({ id: users.id, name: users.name })
         .from(users)
         .where(eq(users.id, openedByUserId))
         .limit(1);
@@ -113,7 +113,7 @@ export class OrdersService {
       return {
         id: ord.id,
         tableId,
-        openedByUserId,
+        waiterName: usr.name,
         tableNumber: tbl.number,
         status: 'open',
         createdAt: ord.createdAt,

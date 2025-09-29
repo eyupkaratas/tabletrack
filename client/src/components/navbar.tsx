@@ -1,3 +1,4 @@
+"use client";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
@@ -16,7 +17,17 @@ const Navbar = () => {
       {/* SAĞ */}
       <div className="w-full sm:w-1/3 flex justify-end items-center gap-2 cursor-pointer">
         <ThemeToggle />
-        <Button variant="destructive" className="cursor-pointer">
+        <Button
+          onClick={async () => {
+            await fetch("http://localhost:3001/auth/logout", {
+              method: "POST",
+              credentials: "include", // cookie gönderilsin
+            });
+            window.location.href = "/login";
+          }}
+          variant="destructive"
+          className="cursor-pointer"
+        >
           Logout
         </Button>
       </div>

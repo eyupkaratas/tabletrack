@@ -14,6 +14,7 @@ export type Table = {
 }; */
 
 export type TableWithOrders = {
+  openOrdersCount: any;
   id: string;
   number: number;
   status: string;
@@ -36,6 +37,7 @@ export type OrderItem = {
 export type Order = {
   id: string;
   orderStatus: string;
+  waiterName: string;
   createdAt: string;
   total: number;
   items: OrderItem[];
