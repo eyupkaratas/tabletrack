@@ -47,12 +47,13 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
         <CardContent>
           <div className="space-y-4">
             {paginatedOrders.length ? (
-              paginatedOrders.map((order) => (
+              paginatedOrders.map((order, index) => (
                 <Card key={order.id}>
                   <CardHeader>
                     <CardTitle className="flex justify-between items-center">
                       <span>
-                        Order –{" "}
+                        Order#
+                        {(currentPage - 1) * pageSize + index + 1} –{" "}
                         {new Date(order.createdAt).toLocaleTimeString("tr-TR", {
                           hour: "2-digit",
                           minute: "2-digit",
