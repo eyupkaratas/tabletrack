@@ -112,7 +112,7 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                           <span>
                             {item.productName} × {item.quantity}{" "}
                             <span
-                              className={`text-xs hover:cursor-pointer ${
+                              className={`text-xs ${
                                 item.status === "placed"
                                   ? "text-yellow-500"
                                   : item.status === "served"

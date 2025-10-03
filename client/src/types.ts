@@ -6,12 +6,15 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
-/* 
-export type Table = {
-  id: string;
-  number: number;
-  status: string;
-}; */
+
+export const userSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Invalid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["admin", "manager", "waiter"]),
+});
+
+export type UserFormData = z.infer<typeof userSchema>;
 
 export type TableWithOrders = {
   openOrdersCount: any;
@@ -43,4 +46,11 @@ export type Order = {
   createdAt: string;
   total: number;
   items: OrderItem[];
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
 };
