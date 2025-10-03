@@ -2,6 +2,16 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "../../types";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import {
@@ -14,9 +24,14 @@ import {
 const deleteUser = async (userId: User["id"]) => {
   const res = await fetch(`http://localhost:3001/users/${userId}`, {
     method: "DELETE",
+    credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to delete user");
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(`Failed to delete user: ${msg}`);
+  }
+
   return await res.json();
 };
 
@@ -108,21 +123,54 @@ export const userColumns = (
             <DropdownMenuItem>Update User</DropdownMenuItem>
 
             {user.id !== currentUserId && (
-              <DropdownMenuItem
-                onClick={async () => {
-                  try {
-                    await deleteUser(user.id);
-                    toast.success("User deleted successfully");
-                    onUserDeleted();
-                  } catch {
-                    toast.error("Failed to delete user");
-                  }
-                }}
-                variant="destructive"
-                className=""
-              >
-                Delete User
-              </DropdownMenuItem>
+              <AlertDialog>
+                {" "}
+                <AlertDialogTrigger>
+                  {" "}
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {" "}
+                    Delete User{" "}
+                  </DropdownMenuItem>{" "}
+                </AlertDialogTrigger>{" "}
+                <AlertDialogContent>
+                  {" "}
+                  <AlertDialogHeader>
+                    {" "}
+                    <AlertDialogTitle>
+                      {" "}
+                      Are you absolutely sure?{" "}
+                    </AlertDialogTitle>{" "}
+                    <AlertDialogDescription>
+                      {" "}
+                      This action cannot be undone. This will permanently delete
+                      this user and remove that data from servers.{" "}
+                    </AlertDialogDescription>{" "}
+                  </AlertDialogHeader>{" "}
+                  <AlertDialogFooter>
+                    {" "}
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>{" "}
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await deleteUser(user.id);
+                          toast.success("User deleted successfully");
+                          onUserDeleted();
+                        } catch {
+                          toast.error("Failed to delete user");
+                        }
+                      }}
+                      variant="destructive"
+                      className=""
+                    >
+                      {" "}
+                      Delete User{" "}
+                    </Button>{" "}
+                  </AlertDialogFooter>{" "}
+                </AlertDialogContent>{" "}
+              </AlertDialog>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
