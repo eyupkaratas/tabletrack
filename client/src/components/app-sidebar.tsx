@@ -11,7 +11,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { getDecodedUser, JwtPayload } from "@/utils/decodeToken";
-import { LayoutGrid, UserRound } from "lucide-react";
+import { LayoutGrid, PanelLeft, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NotificationBell } from "./notification-bell";
@@ -61,7 +61,19 @@ export default function AppSidebar() {
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
         </SidebarMenuButton>
       </SidebarContent>
-      <SidebarFooter />
+      {user?.role !== "waiter" && (
+        <SidebarFooter>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className=" "
+              onClick={() => router.push("/admin")}
+            >
+              <PanelLeft />{" "}
+              <p className="group-data-[state=collapsed]:hidden">Admin Panel</p>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }
