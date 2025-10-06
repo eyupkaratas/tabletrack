@@ -12,6 +12,7 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -28,17 +29,20 @@ import { Input } from "../ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  tableName: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  tableName,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(), //search
   });
 
   return (
@@ -46,7 +50,7 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between py-4">
         {/* Sol */}
         <Input
-          placeholder="Search User"
+          placeholder={`Search ${tableName}`}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)

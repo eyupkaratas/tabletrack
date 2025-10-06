@@ -1,18 +1,31 @@
 "use client";
 
-import UsersTable from "@/components/admin-page-components/users-table";
+import ProductsTable from "@/components/admin-page-components/products/products-table";
+import UsersTable from "@/components/admin-page-components/users/users-table";
+
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AdminPage = () => {
   const [content, setContent] = useState("users");
+  // sayfa ilk yüklendiğinde localStoragedan oku
+  useEffect(() => {
+    const savedContent = localStorage.getItem("adminContent");
+    if (savedContent) {
+      setContent(savedContent);
+    }
+  }, []);
 
+  // content değiştiğinde localStoragea kaydet
+  useEffect(() => {
+    localStorage.setItem("adminContent", content);
+  }, [content]);
   const renderContent = () => {
     switch (content) {
       case "users":
         return <UsersTable />;
       case "products":
-        return "Products ";
+        return <ProductsTable />;
       default:
         return <div>Select a section</div>;
     }

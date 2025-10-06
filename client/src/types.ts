@@ -54,3 +54,19 @@ export type User = {
   email: string;
   role: string;
 };
+
+export type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  isActive: boolean;
+};
+
+export const productSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  category: z.string().min(2, "Category is required"),
+  price: z.string().nonempty("Price is required"),
+});
+
+export type ProductFormData = z.infer<typeof productSchema>;

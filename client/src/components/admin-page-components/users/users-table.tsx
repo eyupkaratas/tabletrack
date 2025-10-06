@@ -1,11 +1,11 @@
 "use client";
 
-import { userColumns } from "@/components/admin-page-components/columns";
 import { User } from "@/types";
 import { getDecodedUser } from "@/utils/decodeToken";
 import { useEffect, useState } from "react";
+import { DataTable } from "../data-table";
 import { CreateUserDialog } from "./create-user-dialog";
-import { DataTable } from "./data-table";
+import { userColumns } from "./user-columns";
 
 export default function UsersTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -51,6 +51,7 @@ export default function UsersTable() {
       <DataTable
         columns={userColumns(fetchUsers, currentUserId)}
         data={users}
+        tableName={"Users"}
       />
     </div>
   );

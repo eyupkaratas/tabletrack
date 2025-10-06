@@ -37,7 +37,7 @@ export default function AppSidebar() {
             <UserRound className="w-6 h-6" />
             <Label
               suppressHydrationWarning
-              className="text-sm font-bold group-data-[state=collapsed]:hidden"
+              className="text-sm font-bold group-data-[state=collapsed]:hidden capitalize"
             >
               {user ? user.name : "Not Logged In"}
             </Label>

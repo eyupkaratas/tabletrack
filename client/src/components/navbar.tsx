@@ -19,8 +19,10 @@ const Navbar = () => {
       </div>
 
       {/* SAĞ */}
-      <div className="w-full sm:w-1/3 flex justify-end items-center gap-2 cursor-pointer">
-        <ThemeToggle />
+      <div className="w-full sm:w-1/3 flex justify-end items-center gap-2 ">
+        <span className="cursor-pointer">
+          <ThemeToggle />
+        </span>
         <Button
           onClick={async () => {
             await fetch("http://localhost:3001/auth/logout", {
