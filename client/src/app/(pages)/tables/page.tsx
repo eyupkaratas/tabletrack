@@ -2,7 +2,7 @@
 import TableCardContent from "@/components/table-card-content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TableWithOrders } from "@/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const TablesPage = () => {
   const [tables, setTables] = useState<TableWithOrders[]>([]);
@@ -10,12 +10,32 @@ const TablesPage = () => {
     null
   );
 
-  useEffect(() => {
-    fetch("http://localhost:3001/tables")
-      .then((res) => res.json())
-      .then((data) => setTables(data))
-      .catch((err) => console.error(err));
+  const fetchTables = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:3001/tables");
+      const data = await res.json();
+      setTables(data);
+    } catch (error) {
+      console.error("Masalar yuklenemedi:", error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchTables();
+  }, [fetchTables]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleOrderCreated = () => {
+      fetchTables();
+    };
+
+    window.addEventListener("orderCreated", handleOrderCreated);
+    return () => {
+      window.removeEventListener("orderCreated", handleOrderCreated);
+    };
+  }, [fetchTables]);
 
   const handleOpenTable = async (number: number) => {
     try {
@@ -23,7 +43,7 @@ const TablesPage = () => {
       const data = await res.json();
       setSelectedTable(data);
     } catch (err) {
-      console.error("Masa detayları alınamadı:", err);
+      console.error("Masa detaylari alinmadi:", err);
     }
   };
 

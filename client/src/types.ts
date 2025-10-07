@@ -70,3 +70,9 @@ export const productSchema = z.object({
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
+
+export const orderSchema = z.object({
+  tableId: z.string().min(1, "Please select a table."),
+});
+
+export type OrderFormData = z.infer<typeof orderSchema>;
