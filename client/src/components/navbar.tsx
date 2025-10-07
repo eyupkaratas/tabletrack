@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import CreateOrderDialog from "./create-order-dialog";
 import { ThemeToggle } from "./theme-toggle";
-import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
@@ -67,19 +66,6 @@ const Navbar = () => {
           products={products}
           onSuccess={handleOrderSuccess}
         />
-        <Button
-          onClick={async () => {
-            await fetch("http://localhost:3001/auth/logout", {
-              method: "POST",
-              credentials: "include",
-            });
-            window.location.href = "/login";
-          }}
-          variant="destructive"
-          className="cursor-pointer"
-        >
-          Logout
-        </Button>
       </div>
     </nav>
   );

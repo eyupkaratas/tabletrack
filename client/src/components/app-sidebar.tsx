@@ -11,7 +11,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { getDecodedUser, JwtPayload } from "@/utils/decodeToken";
-import { LayoutGrid, PanelLeft, UserRound } from "lucide-react";
+import { LayoutGrid, LogOut, PanelLeft, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NotificationBell } from "./notification-bell";
@@ -28,6 +28,19 @@ export default function AppSidebar() {
     }
     loadUser();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3001/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      window.location.href = "/login";
+    }
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -61,19 +74,30 @@ export default function AppSidebar() {
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
         </SidebarMenuButton>
       </SidebarContent>
-      {user?.role !== "waiter" && (
-        <SidebarFooter>
+      <SidebarFooter className="space-y-1 py-2">
+        {user?.role !== "waiter" && (
           <SidebarMenuItem>
             <SidebarMenuButton
-              className=" "
+              className="cursor-pointer"
               onClick={() => router.push("/admin")}
             >
-              <PanelLeft />{" "}
+              <PanelLeft />
               <p className="group-data-[state=collapsed]:hidden">Admin Panel</p>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        </SidebarFooter>
-      )}
+        )}
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            className="cursor-pointer text-red-500"
+            onClick={handleLogout}
+          >
+            <LogOut className="text-red-500" />
+            <p className="group-data-[state=collapsed]:hidden text-red-500">
+              Logout
+            </p>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarFooter>
     </Sidebar>
   );
 }
