@@ -54,8 +54,8 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <Card className="w-full max-w-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 sm:py-10">
+      <Card className="relative w-full max-w-2xl overflow-hidden">
         {/* kapatma butonu */}
         <button
           onClick={onClose}
@@ -66,7 +66,7 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
 
         {/* masa başlığı */}
         <CardHeader>
-          <CardTitle className="flex justify-between items-center">
+          <CardTitle className="flex flex-col gap-2 text-base sm:flex-row sm:items-center sm:justify-between">
             <span>Table-{localTable.number}</span>
             <span
               className={`px-2 py-1 pr-4 rounded text-xs ${
@@ -80,14 +80,14 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="max-h-[60vh] overflow-y-auto pr-1 sm:max-h-[70vh] sm:pr-2">
           <div className="space-y-4">
             {paginatedOrders.length ? (
               paginatedOrders.map((order, index) => (
                 <Card key={order.id}>
                   <CardHeader>
-                    <CardTitle className="flex justify-between items-center">
-                      <span>
+                    <CardTitle className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between sm:text-base">
+                      <span className="font-semibold">
                         Order#
                         {(currentPage - 1) * pageSize + index + 1} –{" "}
                         {new Date(order.createdAt).toLocaleTimeString("tr-TR", {
@@ -95,7 +95,7 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                           minute: "2-digit",
                         })}
                       </span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-muted-foreground sm:text-base">
                         {order.waiterName} •{" "}
                         {order.orderStatus.charAt(0).toUpperCase() +
                           order.orderStatus.slice(1)}
@@ -107,10 +107,16 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                       {order.items.map((item) => (
                         <li
                           key={item.id}
-                          className="flex justify-between py-2 text-sm"
+                          className="flex flex-col gap-2 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                         >
-                          <span>
-                            {item.productName} × {item.quantity}{" "}
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-medium">
+                              {item.productName}
+                            </span>
+                            -
+                            <span className=" font-medium">
+                              {item.quantity}
+                            </span>
                             <span
                               className={`text-xs ${
                                 item.status === "placed"
@@ -123,37 +129,41 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                               {item.status.charAt(0).toUpperCase() +
                                 item.status.slice(1)}
                             </span>
-                            {/* Status değiştirme butonu */}
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                            {/* Status update button */}
                             {item.status !== "served" && (
                               <button
                                 onClick={() =>
                                   handleStatusChange(item.id, "served")
                                 }
-                                className="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded cursor-pointer transition-transform duration-200 hover:scale-105 hover:bg-green-500/60"
+                                className="flex items-center gap-1 rounded bg-green-500 px-2 py-1 text-xs text-white transition-transform duration-200 hover:scale-105 hover:bg-green-500/60"
                               >
-                                <Check className="w-4 h-4" />
+                                <Check className="h-4 w-4" />
+                                <span className="hidden sm:inline">Serve</span>
                               </button>
                             )}
-                            {/* Status değiştirme butonu */}
+                            {/* Status update button */}
                             {item.status !== "cancelled" && (
                               <button
                                 onClick={() =>
                                   handleStatusChange(item.id, "cancelled")
                                 }
-                                className="ml-2 px-2 py-1 text-xs bg-red-500 text-white rounded cursor-pointer transition-transform duration-200 hover:scale-105 hover:bg-red-500/60"
+                                className="flex items-center gap-1 rounded bg-red-500 px-2 py-1 text-xs text-white transition-transform duration-200 hover:scale-105 hover:bg-red-500/60"
                               >
-                                <X className="w-4 h-4" />
+                                <X className="h-4 w-4" />
+                                <span className="hidden sm:inline">Cancel</span>
                               </button>
                             )}
-                          </span>
+                          </div>
 
-                          {/* Sağda fiyat */}
+                          {/* Item price */}
                           <span
-                            className={
+                            className={`sm:self-end sm:text-right ${
                               item.status === "cancelled"
                                 ? "line-through text-gray-400"
                                 : ""
-                            }
+                            }`.trim()}
                           >
                             {(Number(item.unitPrice) * item.quantity).toFixed(
                               2

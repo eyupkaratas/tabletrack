@@ -156,7 +156,7 @@ export default function CreateOrderDialog({
           Create Order
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create New Order</DialogTitle>
         </DialogHeader>
@@ -216,10 +216,10 @@ export default function CreateOrderDialog({
               {selectedItems.map((item) => (
                 <div
                   key={item.productId}
-                  className="flex items-center justify-between gap-3 border-b pb-1"
+                  className="flex flex-col gap-3 border-b pb-3 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <span>{item.name}</span>
-                  <div className="flex items-center gap-2">
+                  <span className="font-medium">{item.name}</span>
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <Input
                       type="number"
                       min={1}
@@ -230,12 +230,12 @@ export default function CreateOrderDialog({
                           Number(event.target.value)
                         )
                       }
-                      className="w-16 text-center"
+                      className="w-full max-w-[120px] text-center sm:w-20"
                     />
                     <Button
                       type="button"
                       variant="ghost"
-                      className="cursor-pointer"
+                      className="w-full cursor-pointer sm:w-auto"
                       onClick={() => handleRemoveProduct(item.productId)}
                     >
                       Remove

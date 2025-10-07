@@ -43,19 +43,22 @@ const Navbar = () => {
   }, [fetchData]);
 
   return (
-    <nav className="flex bg-sidebar items-center justify-between px-4 py-2.5 sticky top-0 border-b shadow-sm z-50 flex-col sm:flex-row">
-      {/* SOL */}
-      <div className="w-full sm:w-1/3 flex justify-start ">
+    <nav className="sticky top-0 z-50 flex flex-wrap items-center gap-3 border-b bg-sidebar px-4 py-2.5 shadow-sm sm:flex-nowrap">
+      <div className="flex w-full items-center justify-between sm:w-auto sm:flex-1 sm:justify-start">
         <SidebarTrigger />
+        <Link
+          href="/dashboard"
+          className="text-lg font-semibold sm:hidden"
+        >
+          TableTrack
+        </Link>
       </div>
-
-      {/* ORTA */}
-      <div className="w-full sm:w-1/3 flex justify-center">
-        <Link href="/dashboard">TableTrack</Link>
+      <div className="hidden w-full justify-center sm:flex sm:w-auto sm:flex-1">
+        <Link href="/dashboard" className="text-lg font-semibold">
+          TableTrack
+        </Link>
       </div>
-
-      {/* SAĞ */}
-      <div className="w-full sm:w-1/3 flex justify-end items-center gap-2 ">
+      <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:flex-1 sm:flex-nowrap sm:justify-end">
         <span className="cursor-pointer">
           <ThemeToggle />
         </span>
@@ -68,7 +71,7 @@ const Navbar = () => {
           onClick={async () => {
             await fetch("http://localhost:3001/auth/logout", {
               method: "POST",
-              credentials: "include", // cookie gonderilsin
+              credentials: "include",
             });
             window.location.href = "/login";
           }}

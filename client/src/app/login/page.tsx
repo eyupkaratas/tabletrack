@@ -94,7 +94,7 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-1/3 self-center"
+                className="w-full self-center sm:w-1/3"
               >
                 {loading ? "Loading..." : "Login"}
               </Button>

@@ -31,27 +31,30 @@ const AdminPage = () => {
     }
   };
   return (
-    <div className="flex w-full h-[900px] border-2 rounded-md  ">
-      {/* Sidebar */}
-      <div className="w-[200px]  bg-sidebar flex flex-col">
+    <div className="flex w-full flex-col gap-4 rounded-md border-2 p-4 md:flex-row md:gap-6">
+      <div className="flex w-full flex-wrap items-center gap-2 rounded-md bg-sidebar p-2 md:w-56 md:flex-col md:items-stretch">
         <button
           onClick={() => setContent("users")}
-          className=" w-full text-center cursor-pointer p-2"
+          className={`w-full cursor-pointer rounded-md px-3 py-2 text-center text-sm font-semibold transition hover:bg-sidebar-accent ${
+            content === "users" ? "bg-sidebar-accent" : ""
+          }`}
         >
           Users
         </button>
-        <Separator />
+        <Separator className="hidden md:block" />
         <button
           onClick={() => setContent("products")}
-          className="w-full text-center cursor-pointer p-2"
+          className={`w-full cursor-pointer rounded-md px-3 py-2 text-center text-sm font-semibold transition hover:bg-sidebar-accent ${
+            content === "products" ? "bg-sidebar-accent" : ""
+          }`}
         >
           Products
         </button>
-        <Separator />
+        <Separator className="hidden md:block" />
       </div>
-
-      {/* Content */}
-      <div className="flex-1 p-4">{renderContent()}</div>
+      <div className="flex-1 rounded-md border border-border/60 p-2 md:border-none md:p-0">
+        {renderContent()}
+      </div>
     </div>
   );
 };
