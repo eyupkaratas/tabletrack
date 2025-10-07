@@ -1,6 +1,7 @@
 import { TableCardContentProps } from "@/types";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
@@ -50,6 +51,28 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
       }));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const getStatusBadgeClasses = (status: string) => {
+    switch (status) {
+      case "served":
+        return "border border-green-500/30 bg-green-500/10 text-green-600";
+      case "cancelled":
+        return "border border-red-500/30 bg-red-500/10 text-red-600";
+      default:
+        return "border border-amber-500/30 bg-amber-500/10 text-amber-600";
+    }
+  };
+
+  const getStatusDotClasses = (status: string) => {
+    switch (status) {
+      case "served":
+        return "bg-green-500";
+      case "cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-amber-500";
     }
   };
 
@@ -103,87 +126,87 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="divide-y">
-                      {order.items.map((item) => (
-                        <li
-                          key={item.id}
-                          className="flex flex-col gap-2 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
-                        >
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-medium">
-                              {item.productName}
-                            </span>
-                            -
-                            <span className=" font-medium">
-                              {item.quantity}
-                            </span>
-                            <span
-                              className={`text-xs ${
-                                item.status === "placed"
-                                  ? "text-yellow-500"
-                                  : item.status === "served"
-                                  ? "text-green-500"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {item.status.charAt(0).toUpperCase() +
-                                item.status.slice(1)}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                            {/* Status update button */}
-                            {item.status !== "served" && (
-                              <button
-                                onClick={() =>
-                                  handleStatusChange(item.id, "served")
-                                }
-                                className="flex items-center gap-1 rounded bg-green-500 px-2 py-1 text-xs text-white transition-transform duration-200 hover:scale-105 hover:bg-green-500/60"
-                              >
-                                <Check className="h-4 w-4" />
-                                <span className="hidden sm:inline">Serve</span>
-                              </button>
-                            )}
-                            {/* Status update button */}
-                            {item.status !== "cancelled" && (
-                              <button
-                                onClick={() =>
-                                  handleStatusChange(item.id, "cancelled")
-                                }
-                                className="flex items-center gap-1 rounded bg-red-500 px-2 py-1 text-xs text-white transition-transform duration-200 hover:scale-105 hover:bg-red-500/60"
-                              >
-                                <X className="h-4 w-4" />
-                                <span className="hidden sm:inline">Cancel</span>
-                              </button>
-                            )}
-                          </div>
+                    <ul className="space-y-3">
+                      {order.items.map((item) => {
+                        const isCancelled = item.status === "cancelled";
 
-                          {/* Item price */}
-                          <span
-                            className={`sm:self-end sm:text-right ${
-                              item.status === "cancelled"
-                                ? "line-through text-gray-400"
-                                : ""
-                            }`.trim()}
+                        return (
+                          <li
+                            key={item.id}
+                            className="space-y-3 rounded-lg border border-border/60 bg-muted/10 p-3 text-sm shadow-sm"
                           >
-                            {(Number(item.unitPrice) * item.quantity).toFixed(
-                              2
-                            )}
-                            ₺
-                          </span>
-                        </li>
-                      ))}
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <span className="font-semibold">
+                                {item.productName} - {item.quantity}
+                              </span>
+                              <span
+                                className={`text-sm font-semibold sm:self-start sm:text-right ${
+                                  isCancelled
+                                    ? "line-through text-muted-foreground"
+                                    : ""
+                                }`}
+                              >
+                                {(Number(item.unitPrice) * item.quantity).toFixed(2)} TL
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <span
+                                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeClasses(
+                                  item.status
+                                )}`}
+                              >
+                                <span
+                                  className={`h-2.5 w-2.5 rounded-full ${getStatusDotClasses(
+                                    item.status
+                                  )}`}
+                                />
+                                {item.status.charAt(0).toUpperCase() +
+                                  item.status.slice(1)}
+                              </span>
+                              <div className="flex flex-wrap items-center gap-2">
+                                {item.status !== "served" && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleStatusChange(item.id, "served")
+                                    }
+                                    className="flex items-center gap-2 border-green-500/40 bg-green-500/10 text-green-600 hover:bg-green-500/20"
+                                  >
+                                  <Check className="h-4 w-4" />
+                                  <span>Served</span>
+                                  </Button>
+                                )}
+                                {item.status !== "cancelled" && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleStatusChange(item.id, "cancelled")
+                                    }
+                                    className="flex items-center gap-2 border-red-500/40 bg-red-500/10 text-red-600 hover:bg-red-500/20"
+                                  >
+                                    <X className="h-4 w-4" />
+                                    <span>Cancel</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                     <p className="text-right mt-2 font-bold">
                       Total:{" "}
                       {order.items
-                        .filter((item) => item.status !== "cancelled") // cancelled hariç
+                        .filter((item) => item.status !== "cancelled") // cancelled haric
                         .reduce(
                           (sum, item) =>
                             sum + Number(item.unitPrice) * item.quantity,
                           0
                         )
-                        .toFixed(2)}
-                      ₺
+                        .toFixed(2)} TL
                     </p>
                   </CardContent>
                 </Card>
