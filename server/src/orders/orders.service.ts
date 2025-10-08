@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
 import { db } from 'src/db';
 import { orderItems, orders, products, tables, users } from 'src/db/schema';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
@@ -227,29 +227,45 @@ export class OrdersService {
       orderItem: updated,
     };
   }
-  async getWaiterDailyStats() {
+  async getUserOrderStats(
+    range: 'hourly' | 'daily' | 'weekly' | 'monthly' = 'hourly',
+    date?: string,
+  ) {
+    const dateSql =
+      range === 'hourly'
+        ? sql<string>`TO_CHAR(${orders.createdAt}, 'HH24:00')`
+        : range === 'daily'
+          ? sql<string>`TO_CHAR(${orders.createdAt}, 'YYYY-MM-DD')`
+          : range === 'weekly'
+            ? sql<string>`TO_CHAR(${orders.createdAt}, 'IYYY-IW')`
+            : sql<string>`TO_CHAR(${orders.createdAt}, 'YYYY-MM')`;
+
     const result = await db
       .select({
-        waiterName: users.name,
-        date: sql<string>`DATE(${orders.createdAt})`.as('date'),
+        userName: users.name,
+        date: dateSql.as('date'),
         orderCount: sql<number>`COUNT(${orders.id})`.as('orderCount'),
       })
       .from(orders)
       .leftJoin(users, eq(orders.openedByUserId, users.id))
-      .groupBy(sql`DATE(${orders.createdAt})`, users.name)
-      .orderBy(sql`DATE(${orders.createdAt})`);
-
-    // Recharts'ın beklediği formata dönüştürelim:
-    // [
-    //   { date: "2025-10-01", Emre: 5, Ahmet: 8 },
-    //   { date: "2025-10-02", Emre: 2, Ahmet: 4 },
-    // ]
+      .where(
+        range === 'hourly' && date
+          ? and(
+              gte(orders.createdAt, new Date(date)),
+              lte(
+                orders.createdAt,
+                new Date(new Date(date).setHours(23, 59, 59, 999)),
+              ),
+            )
+          : undefined,
+      )
+      .groupBy(dateSql, users.name)
+      .orderBy(dateSql);
 
     const grouped: Record<string, Record<string, number>> = {};
-
     result.forEach((row) => {
       if (!grouped[row.date]) grouped[row.date] = {};
-      grouped[row.date][row.waiterName!] = Number(row.orderCount);
+      grouped[row.date][row.userName!] = Number(row.orderCount);
     });
 
     return Object.entries(grouped).map(([date, data]) => ({

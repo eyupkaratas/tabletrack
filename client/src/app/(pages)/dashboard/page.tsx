@@ -1,9 +1,9 @@
-import { LayoutGrid } from "lucide-react";
+import WaiterOrdersChart from "@/components/dashboard-charts.tsx/waiter-orders-chart";
 
 const DashboardPage = () => {
   return (
     <div className="">
-      <LayoutGrid className="w-10 h-10 text-red-500" strokeWidth={1} />
+      <WaiterOrdersChart />
     </div>
   );
 };

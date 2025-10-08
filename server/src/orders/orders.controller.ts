@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { OpenOrderDto } from './dto/open-order.dto';
 import { UpdateOrderItemStatusDto } from './dto/update-order-item-status.dto';
@@ -38,8 +39,13 @@ export class OrdersController {
   ) {
     return this.svc.updateOrderItemStatus(id, dto.status);
   }
-  @Get('waiter-stats')
-  async getWaiterDailyStats() {
-    return this.svc.getWaiterDailyStats();
+  @Get('stats')
+  async getUserOrderStats(
+    @Query('range') range: string,
+    @Query('date') date?: string,
+  ) {
+    const valid = ['hourly', 'daily', 'weekly', 'monthly'];
+    const mode = valid.includes(range) ? (range as any) : 'hourly';
+    return this.svc.getUserOrderStats(mode, date);
   }
 }
