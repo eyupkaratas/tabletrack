@@ -61,15 +61,22 @@ export default function CreateOrderDialog({
     form.register("tableId");
   }, [form]);
 
-  const filteredProducts = useMemo(
-    () =>
-      products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [products, searchTerm]
-  );
+  const filteredProducts = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+
+    return products
+      .filter((product) =>
+        product.name.toLowerCase().includes(query)
+      )
+      .sort((a, b) => Number(b.isActive) - Number(a.isActive));
+  }, [products, searchTerm]);
 
   const handleAddProduct = (product: Product) => {
+    if (!product.isActive) {
+      toast.info("This product is unavailable.");
+      return;
+    }
+
     const exists = selectedItems.find((item) => item.productId === product.id);
     if (exists) {
       toast.info("Product already added");
@@ -219,10 +226,34 @@ export default function CreateOrderDialog({
                 {filteredProducts.map((product) => (
                   <div
                     key={product.id}
+                    role="button"
+                    aria-disabled={!product.isActive}
                     onClick={() => handleAddProduct(product)}
-                    className="cursor-pointer px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className={`flex items-center justify-between gap-2 px-2 py-1 text-sm ${
+                      product.isActive
+                        ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "cursor-not-allowed text-muted-foreground"
+                    }`}
                   >
-                    {product.name} - {product.price}
+                    <span
+                      className={`flex-1 ${
+                        product.isActive ? "" : "line-through"
+                      }`}
+                    >
+                      {product.name}
+                    </span>
+                    <span
+                      className={`text-xs ${
+                        product.isActive ? "" : "line-through"
+                      }`}
+                    >
+                      {product.price}
+                    </span>
+                    {!product.isActive && (
+                      <span className="text-xs font-medium text-red-500">
+                        Unavailable
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
