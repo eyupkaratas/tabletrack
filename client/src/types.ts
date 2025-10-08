@@ -46,6 +46,9 @@ export type Order = {
   createdAt: string;
   total: number;
   items: OrderItem[];
+  orderNumber: string;
+  tableId: string;
+  tableNumber: string;
 };
 
 export type User = {

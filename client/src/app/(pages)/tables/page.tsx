@@ -16,7 +16,7 @@ const TablesPage = () => {
       const data = await res.json();
       setTables(data);
     } catch (error) {
-      console.error("Masalar yuklenemedi:", error);
+      console.error("Can't get tables:", error);
     }
   }, []);
 
@@ -43,7 +43,7 @@ const TablesPage = () => {
       const data = await res.json();
       setSelectedTable(data);
     } catch (err) {
-      console.error("Masa detaylari alinmadi:", err);
+      console.error("Can't get table details:", err);
     }
   };
 

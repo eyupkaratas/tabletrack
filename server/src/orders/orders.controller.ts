@@ -15,6 +15,10 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly svc: OrdersService) {}
 
+  @Get()
+  async findAll() {
+    return this.svc.findAll();
+  }
   @Post('open')
   open(@Body() body: OpenOrderDto) {
     return this.svc.open(body);

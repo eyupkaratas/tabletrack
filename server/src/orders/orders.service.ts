@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from 'src/db';
 import { orderItems, orders, products, tables, users } from 'src/db/schema';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
@@ -18,6 +18,55 @@ export class OrdersService {
       .from(orders)
       .where(eq(orders.orderStatus, 'open'));
     return row.count;
+  }
+  async findAll() {
+    const ords = await db
+      .select({
+        id: orders.id,
+        orderStatus: orders.orderStatus,
+        createdAt: orders.createdAt,
+        closedAt: orders.closedAt,
+        openedByUserId: orders.openedByUserId,
+        waiterName: users.name,
+        tableId: orders.tableId,
+        tableNumber: tables.number,
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.openedByUserId, users.id))
+      .leftJoin(tables, eq(orders.tableId, tables.id))
+      .orderBy(desc(orders.createdAt));
+
+    if (!ords.length) {
+      return [];
+    }
+
+    const ordIds = ords.map((o) => o.id);
+
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        unitPrice: orderItems.unitPrice,
+        status: orderItems.orderItemStatus,
+        productName: products.name,
+      })
+      .from(orderItems)
+      .where(inArray(orderItems.orderId, ordIds))
+      .leftJoin(products, eq(products.id, orderItems.productId));
+
+    const grouped = ords.map((ord) => ({
+      ...ord,
+      items: items.filter((it) => it.orderId === ord.id),
+    }));
+
+    const numbered = grouped.map((ord, index) => ({
+      ...ord,
+      orderNumber: grouped.length - index,
+    }));
+
+    return numbered;
   }
 
   async open(dto: OpenOrderDto) {

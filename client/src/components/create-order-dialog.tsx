@@ -44,7 +44,7 @@ export default function CreateOrderDialog({
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<
-    { productId: string; name: string; quantity: number }[]
+    { productId: string; name: string; quantity: string }[]
   >([]);
 
   const form = useForm<OrderFormData>({
@@ -78,17 +78,35 @@ export default function CreateOrderDialog({
 
     setSelectedItems((prev) => [
       ...prev,
-      { productId: product.id, name: product.name, quantity: 1 },
+      { productId: product.id, name: product.name, quantity: "1" },
     ]);
     setSearchTerm("");
   };
 
-  const handleQuantityChange = (productId: string, quantity: number) => {
-    const normalized = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
+  const handleQuantityChange = (productId: string, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+
     setSelectedItems((prev) =>
       prev.map((item) =>
-        item.productId === productId ? { ...item, quantity: normalized } : item
+        item.productId === productId ? { ...item, quantity: value } : item
       )
+    );
+  };
+
+  const normalizeQuantity = (productId: string) => {
+    setSelectedItems((prev) =>
+      prev.map((item) => {
+        if (item.productId !== productId) {
+          return item;
+        }
+
+        const parsed = Number(item.quantity);
+        if (!item.quantity || Number.isNaN(parsed) || parsed < 1) {
+          return { ...item, quantity: "1" };
+        }
+
+        return { ...item, quantity: String(parsed) };
+      })
     );
   };
 
@@ -121,7 +139,7 @@ export default function CreateOrderDialog({
       ...values,
       items: selectedItems.map((item) => ({
         productId: item.productId,
-        quantity: item.quantity,
+        quantity: Math.max(1, Number(item.quantity) || 1),
       })),
       openedByUserId,
     };
@@ -221,15 +239,16 @@ export default function CreateOrderDialog({
                   <span className="font-medium">{item.name}</span>
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <Input
-                      type="number"
-                      min={1}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={item.quantity}
                       onChange={(event) =>
                         handleQuantityChange(
                           item.productId,
-                          Number(event.target.value)
+                          event.target.value
                         )
                       }
+                      onBlur={() => normalizeQuantity(item.productId)}
                       className="w-full max-w-[120px] text-center sm:w-20"
                     />
                     <Button
