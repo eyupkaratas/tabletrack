@@ -27,23 +27,21 @@ export default async function DashLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <SidebarProvider defaultOpen={false}>
-          <AppSidebar />
-          <main className="w-full relative">
-            <Navbar />
-            <div className="mx-auto p-4 sm:px-0 sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-6xl relative">
-              {children}
-            </div>
-          </main>
-        </SidebarProvider>
-      </ThemeProvider>
-    </div>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SidebarProvider defaultOpen={false}>
+        <AppSidebar />
+        <main className="w-full relative min-h-screen bg-[linear-gradient(180deg,#fafafa_0%,#f1f1f1_100%)] dark:bg-none transition-colors duration-300">
+          <Navbar />
+          <div className="mx-auto p-4 sm:px-0 sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-6xl relative">
+            {children}
+          </div>
+        </main>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }

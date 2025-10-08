@@ -227,4 +227,34 @@ export class OrdersService {
       orderItem: updated,
     };
   }
+  async getWaiterDailyStats() {
+    const result = await db
+      .select({
+        waiterName: users.name,
+        date: sql<string>`DATE(${orders.createdAt})`.as('date'),
+        orderCount: sql<number>`COUNT(${orders.id})`.as('orderCount'),
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.openedByUserId, users.id))
+      .groupBy(sql`DATE(${orders.createdAt})`, users.name)
+      .orderBy(sql`DATE(${orders.createdAt})`);
+
+    // Recharts'ın beklediği formata dönüştürelim:
+    // [
+    //   { date: "2025-10-01", Emre: 5, Ahmet: 8 },
+    //   { date: "2025-10-02", Emre: 2, Ahmet: 4 },
+    // ]
+
+    const grouped: Record<string, Record<string, number>> = {};
+
+    result.forEach((row) => {
+      if (!grouped[row.date]) grouped[row.date] = {};
+      grouped[row.date][row.waiterName!] = Number(row.orderCount);
+    });
+
+    return Object.entries(grouped).map(([date, data]) => ({
+      date,
+      ...data,
+    }));
+  }
 }

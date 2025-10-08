@@ -38,4 +38,8 @@ export class OrdersController {
   ) {
     return this.svc.updateOrderItemStatus(id, dto.status);
   }
+  @Get('waiter-stats')
+  async getWaiterDailyStats() {
+    return this.svc.getWaiterDailyStats();
+  }
 }

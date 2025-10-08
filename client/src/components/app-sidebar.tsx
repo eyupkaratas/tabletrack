@@ -11,7 +11,14 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { getDecodedUser, JwtPayload } from "@/utils/decodeToken";
-import { LayoutGrid, LogOut, PanelLeft, UserRound } from "lucide-react";
+import {
+  Banknote,
+  ChartColumnIncreasing,
+  LayoutGrid,
+  LogOut,
+  PanelLeft,
+  UserRound,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NotificationBell } from "./notification-bell";
@@ -60,6 +67,13 @@ export default function AppSidebar() {
       <SidebarSeparator />
       <SidebarContent>
         <SidebarMenuButton
+          onClick={() => router.push("/dashboard")}
+          className="cursor-pointer"
+        >
+          <ChartColumnIncreasing className="w-7 h-7" strokeWidth={2} />
+          <p className="group-data-[state=collapsed]:hidden">Dashboard</p>
+        </SidebarMenuButton>
+        <SidebarMenuButton
           onClick={() => router.push("/orders")}
           className="cursor-pointer"
         >
@@ -72,6 +86,13 @@ export default function AppSidebar() {
         >
           <LayoutGrid className="w-7 h-7" strokeWidth={2} />
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
+        </SidebarMenuButton>
+        <SidebarMenuButton
+          onClick={() => router.push("/dashboard")}
+          className="cursor-pointer"
+        >
+          <Banknote className="w-7 h-7" strokeWidth={2} />
+          <p className="group-data-[state=collapsed]:hidden">Checkout</p>
         </SidebarMenuButton>
       </SidebarContent>
       <SidebarFooter className="space-y-1 py-2">
