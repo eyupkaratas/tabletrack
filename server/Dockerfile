@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && corepack prepare pnpm@9 --activate
-RUN pnpm install
-
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-CMD ["pnpm", "start:docker"]
+RUN pnpm run build
+
+
+CMD ["sh", "-c", "pnpm db:generate && pnpm db:migrate && pnpm run start:prod"]
