@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start:dev": "cross-env ENV_FILE=.env nest start --watch",
-    "start:docker": "cross-env ENV_FILE=.env.docker nest start --watch",
+    "start:docker": "cross-env ENV_FILE=.env.docker nest start:prod",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
