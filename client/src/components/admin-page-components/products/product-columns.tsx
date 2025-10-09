@@ -21,10 +21,13 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 const deleteUser = async (productId: Product["id"]) => {
-  const res = await fetch(`http://localhost:3001/products/${productId}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
 
   if (!res.ok) {
     const msg = await res.text();

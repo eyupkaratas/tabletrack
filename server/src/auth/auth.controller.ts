@@ -30,7 +30,7 @@ export class AuthController {
     //Cookie set et
     res.cookie('token', token.access_token, {
       httpOnly: true,
-      secure: false, // prod’da true (HTTPS)
+      secure: true, // prod’da true (HTTPS)
       sameSite: 'lax',
       path: '/',
       maxAge: 1000 * 60 * 60, // 1 saat

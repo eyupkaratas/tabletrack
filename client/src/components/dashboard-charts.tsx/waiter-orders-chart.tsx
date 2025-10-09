@@ -128,7 +128,7 @@ export default function WaiterOrdersChart() {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/orders/stats?${params.toString()}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/orders/stats?${params.toString()}`,
           { signal: controller.signal }
         );
 

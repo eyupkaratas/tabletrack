@@ -4,7 +4,7 @@ services:
     container_name: tabletrack_db
     restart: always
     env_file:
-      - ./server/.env
+      - ./server/.env.docker
     ports:
       - "5432:5432"
     volumes:
@@ -23,10 +23,9 @@ services:
       - ./server:/app
       - /app/node_modules
     env_file:
-      - ./server/.env
+      - ./server/.env.docker
     command: >
-      sh -c "/wait-for-it.sh db:5432 --
-      pnpm db:generate && pnpm db:migrate && pnpm start:dev"
+      sh -c "/wait-for-it.sh db:5432 -t 30 -- pnpm db:generate && pnpm db:migrate &&pnpm start:dev"
 
   client:
     build:
@@ -40,6 +39,8 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
+    env_file:
+      - ./client/.env.docker
     
 
 volumes:

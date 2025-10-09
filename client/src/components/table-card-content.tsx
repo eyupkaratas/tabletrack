@@ -22,7 +22,7 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
   const handleStatusChange = async (orderItemId: string, newStatus: string) => {
     try {
       const res = await fetch(
-        `http://localhost:3001/orders/order-items/${orderItemId}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/order-items/${orderItemId}/status`,
         {
           method: "PUT",
           headers: {

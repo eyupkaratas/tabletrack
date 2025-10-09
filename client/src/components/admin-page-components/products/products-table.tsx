@@ -11,7 +11,7 @@ const ProductsTable = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:3001/products", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch users");
@@ -37,11 +37,14 @@ const ProductsTable = () => {
     );
 
     try {
-      const res = await fetch(`http://localhost:3001/products/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: value }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products/${id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isActive: value }),
+        }
+      );
       if (!res.ok) throw new Error();
     } catch (err) {
       toast.error("Error updating status");

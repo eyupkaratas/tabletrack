@@ -8,7 +8,7 @@ const socket = io("http://localhost:3001");
 export function NotificationBell() {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    fetch("http://localhost:3001/orders/count/open")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/count/open`)
       .then((res) => res.json())
       .then((n) => setCount(n))
       .catch(() => {});

@@ -10,7 +10,7 @@ const OrdersPage = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:3001/orders");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`);
       const data = await res.json();
       setOrders(data);
     } catch (error) {
@@ -36,7 +36,9 @@ const OrdersPage = () => {
   }, [fetchOrders]);
   /* const handleOpenTable = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/orders/${id}/details`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${id}/details`
+      );
       const data = await res.json();
       setSelectedOrder(data);
     } catch (err) {
@@ -45,7 +47,6 @@ const OrdersPage = () => {
   }; */
   return (
     <div className="space-y-4">
-      {/* ✅ GRID yapısını koruyoruz */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
         <AnimatePresence>
           {orders
@@ -58,7 +59,7 @@ const OrdersPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
                 transition={{ duration: 0.3 }}
-                className="w-full" // 🔹 grid layout'un bozulmaması için
+                className="w-full"
               >
                 <Card className="border-2 cursor-pointer border-gray-500 transition-transform duration-200 hover:scale-105">
                   <CardHeader>

@@ -22,7 +22,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
 const deleteUser = async (userId: User["id"]) => {
-  const res = await fetch(`http://localhost:3001/users/${userId}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
     method: "DELETE",
     credentials: "include",
   });

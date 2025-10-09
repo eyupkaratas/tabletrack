@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
+  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -30,7 +31,7 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3001/auth/login", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

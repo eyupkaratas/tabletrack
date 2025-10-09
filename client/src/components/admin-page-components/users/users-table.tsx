@@ -20,7 +20,7 @@ export default function UsersTable() {
   }, []);
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3001/users", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch users");
