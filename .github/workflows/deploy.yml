@@ -1,11 +1,13 @@
-name: build-and-deploy
+name: Deploy to Production
 
 on:
   push:
-    branches: [main]
+    branches:
+      - production
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy to Vercel & Render
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +19,6 @@ jobs:
         with:
           node-version: 20
 
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
@@ -28,18 +29,12 @@ jobs:
             pnpm-lock.yaml
             client/pnpm-lock.yaml
             server/pnpm-lock.yaml
-      
-      # - name: Install dependencies (server)
-      #   working-directory: server
-      #   run: pnpm install
 
-      - name: Merge main → production
-        uses: devmasx/merge-branch@v1.4.0
-        with:
-          type: now
-          from_branch: main
-          target_branch: production
-          github_token: ${{ secrets.PERSONAL_TOKEN }}
+      # - name: Build project
+      #   run: pnpm build
 
-      - name: Trigger Render deploy
+      - name: Deploy to Vercel
+        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Trigger Render Deploy
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
