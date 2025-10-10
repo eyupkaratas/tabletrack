@@ -17,6 +17,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000', // Local
       'http://client:3000', // Docker
+      'https://tabletrack-rho.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
