@@ -17,10 +17,11 @@ jobs:
           fetch-depth: 0
 
       - name: Merge main → production
-  uses: devmasx/merge-branch@v1.4.0
-  with:
-    type: now
-    from_branch: main
-    target_branch: production
-    github_token: ${{ secrets.PERSONAL_TOKEN }}
-    exclude: '.github/workflows/**'
+        uses: devmasx/merge-branch@v1.4.0
+        with:
+          type: now
+          from_branch: main
+          target_branch: production
+          github_token: ${{ secrets.PERSONAL_TOKEN }}
+          commit_message: "chore: auto merge main → production"
+          
