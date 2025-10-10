@@ -39,7 +39,7 @@ jobs:
           type: now
           from_branch: main
           target_branch: production
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_TOKEN }}
 
       - name: Trigger Render deploy
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
