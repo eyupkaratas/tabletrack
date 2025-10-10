@@ -1,0 +1,26 @@
+name: Merge main → production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  merge:
+    name: Merge main into production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge main → production
+        uses: devmasx/merge-branch@v1.4.0
+        with:
+          type: now
+          from_branch: main
+          target_branch: production
+          github_token: ${{ secrets.PERSONAL_TOKEN }}
+          commit_message: "chore: auto merge main → production"
