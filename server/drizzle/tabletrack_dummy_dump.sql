@@ -1,11 +1,10 @@
--- TableTrack extensive dummy dataset
--- Drops existing tables/types and rebuilds them with rich seed data
+-- TableTrack comprehensive dummy dataset with realistic UUIDs and varied workload
 
 BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Drop existing data structures ------------------------------------------------
+-- Drop existing structures ----------------------------------------------------
 DROP TABLE IF EXISTS payments CASCADE;
 DROP TABLE IF EXISTS order_items CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
@@ -19,14 +18,14 @@ DROP TYPE IF EXISTS payment_method CASCADE;
 DROP TYPE IF EXISTS table_status CASCADE;
 DROP TYPE IF EXISTS role CASCADE;
 
--- Type definitions -------------------------------------------------------------
+-- Enum definitions -------------------------------------------------------------
 CREATE TYPE role AS ENUM ('admin', 'manager', 'waiter');
 CREATE TYPE table_status AS ENUM ('available', 'active');
 CREATE TYPE order_status AS ENUM ('open', 'completed', 'closed');
 CREATE TYPE item_status AS ENUM ('placed', 'served', 'cancelled');
 CREATE TYPE payment_method AS ENUM ('cash', 'card');
 
--- Tables -----------------------------------------------------------------------
+-- Tables ----------------------------------------------------------------------
 CREATE TABLE users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
@@ -82,175 +81,232 @@ CREATE TABLE payments (
   paid_at timestamptz DEFAULT now()
 );
 
--- Seed: users ------------------------------------------------------------------
-INSERT INTO users (id, name, email, password, role, created_at) VALUES
-  ('11111111-1111-1111-1111-111111111111', 'Admin User', 'admin@admin.com', '$2b$10$4NlhgcOU/jcxwvtke6twvuBQ8Qv41WymvLB0MB1ZyqXAIoJmqDMEi', 'admin', '2025-08-20T08:00:00+03'),
-  ('22222222-2222-2222-2222-222222222222', 'Efe Manager', 'efe.manager@tabletrack.dev', '$2b$10$iplM46BUZPRHfUY1twM9oegaQg.da0WWnZ3OGcQI3ZvxeladtTNzm', 'manager', '2025-08-22T09:30:00+03'),
-  ('33333333-3333-3333-3333-333333333333', 'Selin Supervisor', 'selin.supervisor@tabletrack.dev', '$2b$10$/rJlVN5/SEgdZzp9vnFpMeIJrHmW.PL1NSsDOp5UOCQCrDwoeNwXK', 'manager', '2025-08-22T09:35:00+03'),
-  ('55555555-5555-5555-5555-555555555501', 'Burak Aydin', 'burak.waiter@tabletrack.dev', '$2b$10$gujA8x6bAL8vBbT/lfdUM.1RtlHUzWjLl8P6eKlhi9Nf16oDpU2Ra', 'waiter', '2025-08-25T10:05:00+03'),
-  ('55555555-5555-5555-5555-555555555502', 'Elif Oral', 'elif.waiter@tabletrack.dev', '$2b$10$k/bjTAbiZmMxbGXPJbem8ewGIFW8vPBR./pvP89P0Hq1aawITXorC', 'waiter', '2025-08-25T10:07:00+03'),
-  ('55555555-5555-5555-5555-555555555503', 'Can Demir', 'can.waiter@tabletrack.dev', '$2b$10$5QcECWZsPrb5AHu.WkbfZOHI5/0vT08XNpIQE.wlyEfJ0txmzkuNq', 'waiter', '2025-08-25T10:09:00+03'),
-  ('55555555-5555-5555-5555-555555555504', 'Merve Guler', 'merve.waiter@tabletrack.dev', '$2b$10$Q2rQN/GJSukfdg9yPyM1O.du1VoOH7JqegHRKnTBuVyuFcmuEXbIu', 'waiter', '2025-08-25T10:10:00+03'),
-  ('55555555-5555-5555-5555-555555555505', 'Deniz Yilmaz', 'deniz.waiter@tabletrack.dev', '$2b$10$v4xCCcHl6K6j6gZeH/F0G.03xVzEi9N3ajD1CFs.LRi9OwBUFUgW2', 'waiter', '2025-08-25T10:12:00+03'),
-  ('55555555-5555-5555-5555-555555555506', 'Gamze Cetin', 'gamze.waiter@tabletrack.dev', '$2b$10$xjzORLct.9USw98f9aFrQuuWV0bZGhSwIR0SV8uG2BDRJdgoGn9fK', 'waiter', '2025-08-25T10:14:00+03');
+-- Seed users with generated UUIDs ---------------------------------------------
+INSERT INTO users (id, name, email, password, role, created_at)
+SELECT gen_random_uuid(), name, email, password, role::role, created_at
+FROM (
+  VALUES
+    ('Admin User', 'admin@admin.com', '$2b$10$4NlhgcOU/jcxwvtke6twvuBQ8Qv41WymvLB0MB1ZyqXAIoJmqDMEi', 'admin', '2025-08-20T08:00:00+03'::timestamptz),
+    ('Efe Manager', 'efe.manager@tabletrack.dev', '$2b$10$iplM46BUZPRHfUY1twM9oegaQg.da0WWnZ3OGcQI3ZvxeladtTNzm', 'manager', '2025-08-22T09:30:00+03'::timestamptz),
+    ('Selin Supervisor', 'selin.supervisor@tabletrack.dev', '$2b$10$/rJlVN5/SEgdZzp9vnFpMeIJrHmW.PL1NSsDOp5UOCQCrDwoeNwXK', 'manager', '2025-08-22T09:35:00+03'::timestamptz),
+    ('Burak Aydin', 'burak.waiter@tabletrack.dev', '$2b$10$gujA8x6bAL8vBbT/lfdUM.1RtlHUzWjLl8P6eKlhi9Nf16oDpU2Ra', 'waiter', '2025-08-25T10:05:00+03'::timestamptz),
+    ('Elif Oral', 'elif.waiter@tabletrack.dev', '$2b$10$k/bjTAbiZmMxbGXPJbem8ewGIFW8vPBR./pvP89P0Hq1aawITXorC', 'waiter', '2025-08-25T10:07:00+03'::timestamptz),
+    ('Can Demir', 'can.waiter@tabletrack.dev', '$2b$10$5QcECWZsPrb5AHu.WkbfZOHI5/0vT08XNpIQE.wlyEfJ0txmzkuNq', 'waiter', '2025-08-25T10:09:00+03'::timestamptz),
+    ('Merve Guler', 'merve.waiter@tabletrack.dev', '$2b$10$Q2rQN/GJSukfdg9yPyM1O.du1VoOH7JqegHRKnTBuVyuFcmuEXbIu', 'waiter', '2025-08-25T10:10:00+03'::timestamptz),
+    ('Deniz Yilmaz', 'deniz.waiter@tabletrack.dev', '$2b$10$v4xCCcHl6K6j6gZeH/F0G.03xVzEi9N3ajD1CFs.LRi9OwBUFUgW2', 'waiter', '2025-08-25T10:12:00+03'::timestamptz),
+    ('Gamze Cetin', 'gamze.waiter@tabletrack.dev', '$2b$10$xjzORLct.9USw98f9aFrQuuWV0bZGhSwIR0SV8uG2BDRJdgoGn9fK', 'waiter', '2025-08-25T10:14:00+03'::timestamptz),
+    ('Ahmet Kaya', 'ahmet.waiter@tabletrack.dev', '$2b$10$XYwGpPc7e0.SgeNBmbtcyO8J3n7SpTMa06w5VP3V.eykDeFSoJOTe', 'waiter', '2025-08-25T10:16:00+03'::timestamptz)
+) AS u(name, email, password, role, created_at);
 
--- Seed: tables -----------------------------------------------------------------
-INSERT INTO tables (id, number, status, created_at) VALUES
-  ('30000000-0000-0000-0000-000000000001', 1, 'active', '2025-08-30T08:00:00+03'),
-  ('30000000-0000-0000-0000-000000000002', 2, 'active', '2025-08-30T08:00:00+03'),
-  ('30000000-0000-0000-0000-000000000003', 3, 'active', '2025-08-30T08:05:00+03'),
-  ('30000000-0000-0000-0000-000000000004', 4, 'active', '2025-08-30T08:05:00+03'),
-  ('30000000-0000-0000-0000-000000000005', 5, 'available', '2025-08-30T08:10:00+03'),
-  ('30000000-0000-0000-0000-000000000006', 6, 'available', '2025-08-30T08:10:00+03'),
-  ('30000000-0000-0000-0000-000000000007', 7, 'available', '2025-08-30T08:12:00+03'),
-  ('30000000-0000-0000-0000-000000000008', 8, 'available', '2025-08-30T08:12:00+03'),
-  ('30000000-0000-0000-0000-000000000009', 9, 'available', '2025-08-30T08:15:00+03'),
-  ('30000000-0000-0000-0000-000000000010', 10, 'available', '2025-08-30T08:15:00+03'),
-  ('30000000-0000-0000-0000-000000000011', 11, 'available', '2025-08-30T08:20:00+03'),
-  ('30000000-0000-0000-0000-000000000012', 12, 'available', '2025-08-30T08:20:00+03');
+-- Seed tables -----------------------------------------------------------------
+INSERT INTO tables (id, number, status, created_at)
+SELECT gen_random_uuid(), number, status::table_status, created_at
+FROM (
+  VALUES
+    (1, 'active', '2025-08-30T08:00:00+03'::timestamptz),
+    (2, 'active', '2025-08-30T08:00:00+03'::timestamptz),
+    (3, 'active', '2025-08-30T08:05:00+03'::timestamptz),
+    (4, 'active', '2025-08-30T08:05:00+03'::timestamptz),
+    (5, 'active', '2025-08-30T08:10:00+03'::timestamptz),
+    (6, 'active', '2025-08-30T08:10:00+03'::timestamptz),
+    (7, 'available', '2025-08-30T08:12:00+03'::timestamptz),
+    (8, 'available', '2025-08-30T08:12:00+03'::timestamptz),
+    (9, 'available', '2025-08-30T08:15:00+03'::timestamptz),
+    (10, 'available', '2025-08-30T08:15:00+03'::timestamptz),
+    (11, 'available', '2025-08-30T08:20:00+03'::timestamptz),
+    (12, 'available', '2025-08-30T08:20:00+03'::timestamptz),
+    (13, 'available', '2025-08-30T08:25:00+03'::timestamptz),
+    (14, 'available', '2025-08-30T08:25:00+03'::timestamptz),
+    (15, 'available', '2025-08-30T08:30:00+03'::timestamptz)
+) AS t(number, status, created_at);
 
--- Seed: products ---------------------------------------------------------------
-INSERT INTO products (id, name, category, price, is_active, created_at) VALUES
-  ('40000000-0000-0000-0000-000000000001', 'Turkish Coffee', 'Beverage', 42.00, true, '2025-08-28T09:00:00+03'),
-  ('40000000-0000-0000-0000-000000000002', 'Espresso', 'Beverage', 38.00, true, '2025-08-28T09:02:00+03'),
-  ('40000000-0000-0000-0000-000000000003', 'Americano', 'Beverage', 44.00, true, '2025-08-28T09:04:00+03'),
-  ('40000000-0000-0000-0000-000000000004', 'Cappuccino', 'Beverage', 55.00, true, '2025-08-28T09:06:00+03'),
-  ('40000000-0000-0000-0000-000000000005', 'Latte', 'Beverage', 58.00, true, '2025-08-28T09:08:00+03'),
-  ('40000000-0000-0000-0000-000000000006', 'Flat White', 'Beverage', 60.00, true, '2025-08-28T09:10:00+03'),
-  ('40000000-0000-0000-0000-000000000007', 'Mocha', 'Beverage', 62.00, true, '2025-08-28T09:12:00+03'),
-  ('40000000-0000-0000-0000-000000000008', 'Matcha Latte', 'Beverage', 68.00, true, '2025-08-28T09:14:00+03'),
-  ('40000000-0000-0000-0000-000000000009', 'Fresh Orange Juice', 'Beverage', 52.00, true, '2025-08-28T09:16:00+03'),
-  ('40000000-0000-0000-0000-000000000010', 'Sparkling Water', 'Beverage', 28.00, true, '2025-08-28T09:18:00+03'),
-  ('40000000-0000-0000-0000-000000000011', 'Still Water', 'Beverage', 18.00, true, '2025-08-28T09:20:00+03'),
-  ('40000000-0000-0000-0000-000000000012', 'Herbal Tea', 'Beverage', 36.00, true, '2025-08-28T09:22:00+03'),
-  ('40000000-0000-0000-0000-000000000013', 'Margherita Pizza', 'Kitchen', 168.00, true, '2025-08-28T09:30:00+03'),
-  ('40000000-0000-0000-0000-000000000014', 'Four Cheese Pizza', 'Kitchen', 195.00, true, '2025-08-28T09:32:00+03'),
-  ('40000000-0000-0000-0000-000000000015', 'Pepperoni Pizza', 'Kitchen', 202.00, true, '2025-08-28T09:34:00+03'),
-  ('40000000-0000-0000-0000-000000000016', 'Chicken Burger', 'Kitchen', 145.00, true, '2025-08-28T09:36:00+03'),
-  ('40000000-0000-0000-0000-000000000017', 'Mediterranean Salad', 'Kitchen', 118.00, true, '2025-08-28T09:38:00+03'),
-  ('40000000-0000-0000-0000-000000000018', 'Caesar Salad', 'Kitchen', 124.00, true, '2025-08-28T09:40:00+03'),
-  ('40000000-0000-0000-0000-000000000019', 'Grilled Salmon', 'Kitchen', 210.00, true, '2025-08-28T09:42:00+03'),
-  ('40000000-0000-0000-0000-000000000020', 'Roasted Chicken', 'Kitchen', 185.00, true, '2025-08-28T09:44:00+03'),
-  ('40000000-0000-0000-0000-000000000021', 'Chocolate Brownie', 'Dessert', 72.00, true, '2025-08-28T09:50:00+03'),
-  ('40000000-0000-0000-0000-000000000022', 'Tiramisu', 'Dessert', 84.00, true, '2025-08-28T09:52:00+03'),
-  ('40000000-0000-0000-0000-000000000023', 'Panna Cotta', 'Dessert', 79.00, true, '2025-08-28T09:54:00+03'),
-  ('40000000-0000-0000-0000-000000000024', 'New York Cheesecake', 'Dessert', 94.00, true, '2025-08-28T09:56:00+03');
+-- Seed products ---------------------------------------------------------------
+INSERT INTO products (id, name, category, price, is_active, created_at)
+SELECT gen_random_uuid(), name, category, price, true, created_at
+FROM (
+  VALUES
+    ('Turkish Coffee', 'Beverage', 42.00, '2025-08-28T09:00:00+03'::timestamptz),
+    ('Espresso', 'Beverage', 38.00, '2025-08-28T09:02:00+03'::timestamptz),
+    ('Americano', 'Beverage', 44.00, '2025-08-28T09:04:00+03'::timestamptz),
+    ('Cappuccino', 'Beverage', 55.00, '2025-08-28T09:06:00+03'::timestamptz),
+    ('Latte', 'Beverage', 58.00, '2025-08-28T09:08:00+03'::timestamptz),
+    ('Flat White', 'Beverage', 60.00, '2025-08-28T09:10:00+03'::timestamptz),
+    ('Mocha', 'Beverage', 62.00, '2025-08-28T09:12:00+03'::timestamptz),
+    ('Matcha Latte', 'Beverage', 68.00, '2025-08-28T09:14:00+03'::timestamptz),
+    ('Fresh Orange Juice', 'Beverage', 52.00, '2025-08-28T09:16:00+03'::timestamptz),
+    ('Sparkling Water', 'Beverage', 28.00, '2025-08-28T09:18:00+03'::timestamptz),
+    ('Still Water', 'Beverage', 18.00, '2025-08-28T09:20:00+03'::timestamptz),
+    ('Herbal Tea', 'Beverage', 36.00, '2025-08-28T09:22:00+03'::timestamptz),
+    ('Margherita Pizza', 'Kitchen', 168.00, '2025-08-28T09:30:00+03'::timestamptz),
+    ('Four Cheese Pizza', 'Kitchen', 195.00, '2025-08-28T09:32:00+03'::timestamptz),
+    ('Pepperoni Pizza', 'Kitchen', 202.00, '2025-08-28T09:34:00+03'::timestamptz),
+    ('Chicken Burger', 'Kitchen', 145.00, '2025-08-28T09:36:00+03'::timestamptz),
+    ('Mediterranean Salad', 'Kitchen', 118.00, '2025-08-28T09:38:00+03'::timestamptz),
+    ('Caesar Salad', 'Kitchen', 124.00, '2025-08-28T09:40:00+03'::timestamptz),
+    ('Grilled Salmon', 'Kitchen', 210.00, '2025-08-28T09:42:00+03'::timestamptz),
+    ('Roasted Chicken', 'Kitchen', 185.00, '2025-08-28T09:44:00+03'::timestamptz),
+    ('Chocolate Brownie', 'Dessert', 72.00, '2025-08-28T09:50:00+03'::timestamptz),
+    ('Tiramisu', 'Dessert', 84.00, '2025-08-28T09:52:00+03'::timestamptz),
+    ('Panna Cotta', 'Dessert', 79.00, '2025-08-28T09:54:00+03'::timestamptz),
+    ('New York Cheesecake', 'Dessert', 94.00, '2025-08-28T09:56:00+03'::timestamptz),
+    ('Baklava Plate', 'Dessert', 88.00, '2025-08-28T10:00:00+03'::timestamptz),
+    ('Seasonal Fruit Bowl', 'Kitchen', 110.00, '2025-08-28T10:02:00+03'::timestamptz),
+    ('Truffle Pasta', 'Kitchen', 225.00, '2025-08-28T10:04:00+03'::timestamptz),
+    ('Grilled Ribeye', 'Kitchen', 285.00, '2025-08-28T10:06:00+03'::timestamptz),
+    ('Veggie Wrap', 'Kitchen', 132.00, '2025-08-28T10:08:00+03'::timestamptz),
+    ('Iced Caramel Latte', 'Beverage', 65.00, '2025-08-28T10:10:00+03'::timestamptz)
+) AS p(name, category, price, created_at);
 
--- Seed: historical orders & items ---------------------------------------------
-WITH waiter_pool AS (
-  SELECT ARRAY[
-    '55555555-5555-5555-5555-555555555501'::uuid,
-    '55555555-5555-5555-5555-555555555502'::uuid,
-    '55555555-5555-5555-5555-555555555503'::uuid,
-    '55555555-5555-5555-5555-555555555504'::uuid,
-    '55555555-5555-5555-5555-555555555505'::uuid,
-    '55555555-5555-5555-5555-555555555506'::uuid
-  ] AS ids
+-- Seed orders and order items with realistic distribution ---------------------
+WITH waiter_lookup AS (
+  SELECT
+    (SELECT id FROM users WHERE email = 'burak.waiter@tabletrack.dev') AS burak,
+    (SELECT id FROM users WHERE email = 'elif.waiter@tabletrack.dev') AS elif,
+    (SELECT id FROM users WHERE email = 'can.waiter@tabletrack.dev') AS can,
+    (SELECT id FROM users WHERE email = 'merve.waiter@tabletrack.dev') AS merve,
+    (SELECT id FROM users WHERE email = 'deniz.waiter@tabletrack.dev') AS deniz,
+    (SELECT id FROM users WHERE email = 'gamze.waiter@tabletrack.dev') AS gamze,
+    (SELECT id FROM users WHERE email = 'ahmet.waiter@tabletrack.dev') AS ahmet
 ),
-table_pool AS (
-  SELECT ARRAY[
-    '30000000-0000-0000-0000-000000000001'::uuid,
-    '30000000-0000-0000-0000-000000000002'::uuid,
-    '30000000-0000-0000-0000-000000000003'::uuid,
-    '30000000-0000-0000-0000-000000000004'::uuid,
-    '30000000-0000-0000-0000-000000000005'::uuid,
-    '30000000-0000-0000-0000-000000000006'::uuid,
-    '30000000-0000-0000-0000-000000000007'::uuid,
-    '30000000-0000-0000-0000-000000000008'::uuid,
-    '30000000-0000-0000-0000-000000000009'::uuid,
-    '30000000-0000-0000-0000-000000000010'::uuid,
-    '30000000-0000-0000-0000-000000000011'::uuid,
-    '30000000-0000-0000-0000-000000000012'::uuid
-  ] AS ids
+table_array AS (
+  SELECT array_agg(id ORDER BY number) AS ids
+  FROM tables
 ),
-product_pool AS (
-  SELECT ARRAY[
-    '40000000-0000-0000-0000-000000000001'::uuid,
-    '40000000-0000-0000-0000-000000000002'::uuid,
-    '40000000-0000-0000-0000-000000000003'::uuid,
-    '40000000-0000-0000-0000-000000000004'::uuid,
-    '40000000-0000-0000-0000-000000000005'::uuid,
-    '40000000-0000-0000-0000-000000000006'::uuid,
-    '40000000-0000-0000-0000-000000000007'::uuid,
-    '40000000-0000-0000-0000-000000000008'::uuid,
-    '40000000-0000-0000-0000-000000000009'::uuid,
-    '40000000-0000-0000-0000-000000000010'::uuid,
-    '40000000-0000-0000-0000-000000000011'::uuid,
-    '40000000-0000-0000-0000-000000000012'::uuid,
-    '40000000-0000-0000-0000-000000000013'::uuid,
-    '40000000-0000-0000-0000-000000000014'::uuid,
-    '40000000-0000-0000-0000-000000000015'::uuid,
-    '40000000-0000-0000-0000-000000000016'::uuid,
-    '40000000-0000-0000-0000-000000000017'::uuid,
-    '40000000-0000-0000-0000-000000000018'::uuid,
-    '40000000-0000-0000-0000-000000000019'::uuid,
-    '40000000-0000-0000-0000-000000000020'::uuid,
-    '40000000-0000-0000-0000-000000000021'::uuid,
-    '40000000-0000-0000-0000-000000000022'::uuid,
-    '40000000-0000-0000-0000-000000000023'::uuid,
-    '40000000-0000-0000-0000-000000000024'::uuid
-  ] AS ids
+product_array AS (
+  SELECT array_agg(id ORDER BY name) AS ids
+  FROM products
+),
+calendar AS (
+  SELECT
+    gs AS order_index,
+    gs / 70 AS week_index,
+    gs % 7 AS day_index,
+    gs % 10 AS slot_index,
+    gs % 5 AS mini_slot
+  FROM generate_series(0, 279) AS gs
 ),
 order_seed AS (
   SELECT
     gen_random_uuid() AS id,
-    gs AS order_index,
-    table_pool.ids[(gs % array_length(table_pool.ids, 1)) + 1] AS table_id,
+    calendar.order_index,
+    table_array.ids[((calendar.order_index * 9 + calendar.day_index * 2 + calendar.week_index) % array_length(table_array.ids, 1)) + 1] AS table_id,
     CASE
-      WHEN gs % 5 = 0 THEN 'closed'
-      WHEN gs % 5 = 1 THEN 'completed'
-      WHEN gs % 5 = 2 THEN 'completed'
-      WHEN gs % 5 = 3 THEN 'closed'
-      ELSE 'completed'
+      WHEN calendar.order_index >= 268 THEN 'open'
+      WHEN calendar.week_index = 3 AND calendar.day_index >= 5 AND calendar.slot_index >= 6 THEN 'open'
+      WHEN calendar.order_index % 6 = 0 THEN 'closed'
+      WHEN calendar.order_index % 6 = 1 THEN 'completed'
+      WHEN calendar.order_index % 6 = 2 THEN 'completed'
+      WHEN calendar.order_index % 6 = 3 THEN 'closed'
+      WHEN calendar.order_index % 6 = 4 THEN 'completed'
+      ELSE 'closed'
     END::order_status AS order_status,
-    waiter_pool.ids[(gs % array_length(waiter_pool.ids, 1)) + 1] AS user_id,
     (
-      TIMESTAMPTZ '2025-10-12 09:00:00+03'
-      - ((gs / 4) * INTERVAL '1 day')
-      + ((gs % 24) * INTERVAL '20 minutes')
+      CASE calendar.week_index
+        WHEN 0 THEN
+          CASE
+            WHEN calendar.day_index IN (5, 6) AND calendar.slot_index >= 5 THEN waiter_lookup.gamze
+            WHEN calendar.day_index = 0 AND calendar.slot_index < 6 THEN waiter_lookup.burak
+            WHEN calendar.day_index = 1 THEN waiter_lookup.elif
+            WHEN calendar.day_index = 2 THEN CASE WHEN calendar.slot_index % 2 = 0 THEN waiter_lookup.deniz ELSE waiter_lookup.can END
+            WHEN calendar.day_index = 3 THEN waiter_lookup.burak
+            WHEN calendar.day_index = 4 THEN waiter_lookup.elif
+            ELSE waiter_lookup.merve
+          END
+        WHEN 1 THEN
+          CASE
+            WHEN calendar.day_index = 0 THEN waiter_lookup.deniz
+            WHEN calendar.day_index = 1 THEN waiter_lookup.merve
+            WHEN calendar.day_index = 2 AND calendar.slot_index >= 7 THEN waiter_lookup.ahmet
+            WHEN calendar.day_index = 2 THEN waiter_lookup.can
+            WHEN calendar.day_index = 3 THEN waiter_lookup.deniz
+            WHEN calendar.day_index = 4 THEN waiter_lookup.gamze
+            ELSE waiter_lookup.burak
+          END
+        WHEN 2 THEN
+          CASE
+            WHEN calendar.day_index IN (0, 6) THEN waiter_lookup.ahmet
+            WHEN calendar.day_index = 1 THEN waiter_lookup.gamze
+            WHEN calendar.day_index = 2 THEN waiter_lookup.elif
+            WHEN calendar.day_index = 3 THEN waiter_lookup.merve
+            WHEN calendar.day_index = 4 THEN waiter_lookup.can
+            WHEN calendar.day_index = 5 THEN waiter_lookup.deniz
+            ELSE waiter_lookup.burak
+          END
+        ELSE
+          CASE
+            WHEN calendar.day_index = 0 THEN waiter_lookup.can
+            WHEN calendar.day_index = 1 THEN waiter_lookup.burak
+            WHEN calendar.day_index = 2 THEN waiter_lookup.deniz
+            WHEN calendar.day_index = 3 AND calendar.slot_index >= 7 THEN waiter_lookup.gamze
+            WHEN calendar.day_index = 3 THEN waiter_lookup.elif
+            WHEN calendar.day_index = 4 THEN waiter_lookup.merve
+            WHEN calendar.day_index = 5 THEN waiter_lookup.ahmet
+            ELSE waiter_lookup.gamze
+          END
+      END
+    ) AS user_id,
+    (
+      TIMESTAMPTZ '2025-09-15 08:00:00+03'
+      + (calendar.week_index * INTERVAL '7 days')
+      + (calendar.day_index * INTERVAL '1 day')
+      + (calendar.slot_index * INTERVAL '65 minutes')
+      + (calendar.mini_slot * INTERVAL '6 minutes')
+      + ((calendar.order_index % 3) * INTERVAL '3 minutes')
     ) AS created_at
-  FROM generate_series(0, 119) AS gs
-  CROSS JOIN waiter_pool
-  CROSS JOIN table_pool
+  FROM calendar
+  CROSS JOIN table_array
+  CROSS JOIN waiter_lookup
 ),
 prepared_orders AS (
   SELECT
-    id,
-    order_index,
-    table_id,
-    order_status,
-    user_id,
-    created_at,
-    created_at + (((order_index % 3) + 1) * INTERVAL '35 minutes') AS closed_at
-  FROM order_seed
+    os.id,
+    os.order_index,
+    os.table_id,
+    os.order_status,
+    os.user_id,
+    os.created_at,
+    CASE
+      WHEN os.order_status = 'open' THEN NULL
+      ELSE os.created_at
+        + INTERVAL '38 minutes'
+        + ((os.order_index % 5) * INTERVAL '5 minutes')
+        + ((os.order_index % 3) * INTERVAL '2 minutes')
+    END AS closed_at
+  FROM order_seed os
 ),
 inserted_orders AS (
   INSERT INTO orders (id, table_id, order_status, user_id, created_at, closed_at, total)
   SELECT id, table_id, order_status, user_id, created_at, closed_at, 0
   FROM prepared_orders
-  RETURNING id, table_id, order_status, user_id, created_at, closed_at
+  RETURNING id, table_id, order_status, user_id, created_at
 ),
 order_details AS (
   SELECT
-    io.*,
+    io.id,
     po.order_index,
+    po.order_status,
+    po.user_id,
+    po.table_id,
+    po.created_at,
+    po.closed_at,
     ((po.order_index % 4) + 2) AS item_count
   FROM inserted_orders io
-  JOIN prepared_orders po USING (id)
+  JOIN prepared_orders po ON po.id = io.id
 ),
 order_item_rows AS (
   SELECT
     gen_random_uuid() AS id,
     od.id AS order_id,
-    product_pool.ids[((od.order_index + item_offset) % array_length(product_pool.ids, 1)) + 1] AS product_id,
-    ((item_offset % 3) + 1) AS quantity,
+    product_array.ids[((od.order_index * 5 + item_offset * 7 + od.item_count) % array_length(product_array.ids, 1)) + 1] AS product_id,
+    1 + ((item_offset + od.order_index) % 3) AS quantity,
     CASE
-      WHEN ((od.order_index + item_offset) % 20) = 0 THEN 'cancelled'
+      WHEN od.order_status = 'open' AND item_offset >= od.item_count - 1 THEN 'placed'
+      WHEN (od.order_index + item_offset) % 17 = 0 THEN 'cancelled'
+      WHEN (od.order_index % 29 = 0 AND item_offset = 0) THEN 'placed'
       ELSE 'served'
-    END::item_status AS item_status,
-    item_offset
+    END::item_status AS item_status
   FROM order_details od
-  CROSS JOIN product_pool
+  CROSS JOIN product_array
   CROSS JOIN LATERAL generate_series(0, od.item_count - 1) AS item_offset
 )
 INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, item_status)
@@ -260,33 +316,33 @@ SELECT
   oir.product_id,
   oir.quantity,
   p.price,
-  CASE
-    WHEN oir.item_status = 'cancelled' THEN 'cancelled'
-    ELSE 'served'
-  END::item_status AS item_status
+  oir.item_status
 FROM order_item_rows oir
 JOIN products p ON p.id = oir.product_id;
 
--- Update totals excluding cancelled line items ---------------------------------
+-- Update totals excluding cancelled items -------------------------------------
 UPDATE orders o
-SET total = COALESCE(sub.sum_price, 0)
+SET total = COALESCE(sub.total_value, 0)
 FROM (
   SELECT
     order_id,
-    SUM(quantity * unit_price) FILTER (WHERE item_status <> 'cancelled') AS sum_price
+    SUM(quantity * unit_price) FILTER (WHERE item_status <> 'cancelled') AS total_value
   FROM order_items
   GROUP BY order_id
 ) sub
 WHERE o.id = sub.order_id;
 
--- Seed: payments (all historical orders marked as paid) -----------------------
+-- Seed payments only for completed/closed orders ------------------------------
 WITH payment_source AS (
   SELECT
     o.id,
     o.total,
-    COALESCE(o.closed_at, o.created_at + INTERVAL '45 minutes') AS closed_at,
-    ROW_NUMBER() OVER (ORDER BY o.created_at) AS rn
+    o.order_status,
+    COALESCE(o.closed_at, o.created_at + INTERVAL '45 minutes') AS paid_at_base,
+    ROW_NUMBER() OVER (ORDER BY o.created_at) AS rn,
+    EXTRACT(WEEK FROM o.created_at)::int AS week_no
   FROM orders o
+  WHERE o.order_status <> 'open'
 )
 INSERT INTO payments (id, order_id, amount, method, paid_at)
 SELECT
@@ -294,11 +350,11 @@ SELECT
   ps.id,
   ps.total,
   CASE
-    WHEN ps.rn % 3 = 0 THEN 'cash'
-    WHEN ps.rn % 2 = 0 THEN 'card'
+    WHEN ps.week_no % 3 = 0 AND ps.rn % 4 <> 0 THEN 'cash'
+    WHEN ps.rn % 5 = 0 THEN 'cash'
     ELSE 'card'
   END::payment_method,
-  ps.closed_at + ((ps.rn % 5) * INTERVAL '5 minutes')
+  ps.paid_at_base + ((ps.rn % 6) * INTERVAL '4 minutes')
 FROM payment_source ps;
 
 COMMIT;
