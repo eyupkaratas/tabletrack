@@ -18,6 +18,7 @@ async function bootstrap() {
       'http://localhost:3000', // Local
       'http://client:3000', // Docker
       'https://tabletrack-rho.vercel.app',
+      'https://tabletrack.eyupkaratas.dev',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
