@@ -31,9 +31,9 @@ export class AuthController {
     res.cookie('token', token.access_token, {
       httpOnly: true,
       secure: true, // prod’da true (HTTPS)
-      sameSite: 'lax',
+      sameSite: 'none', // front, back farklı sitelerde
       path: '/',
-      maxAge: 1000 * 60 * 60, // 1 saat
+      maxAge: 8000 * 60 * 60, // 8 saat
     });
 
     return { message: 'Login successful' };
