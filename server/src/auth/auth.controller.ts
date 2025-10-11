@@ -21,28 +21,35 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // Kullanıcıyı doğrula
-    const user = await this.authService.validateUser(body.email, body.password);
+    // Validate user credentials
+    const user = await this.authService.validateUser(
+      body.email,
+      body.password,
+    );
 
-    //Token üret
+    // Create JWT token
     const token = await this.authService.login(user);
 
-    //Cookie set et
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', token.access_token, {
       httpOnly: true,
-      secure: true, // prod’da true (HTTPS)
-      sameSite: 'none', // front, back farklı sitelerde
+      secure: isProduction,
+      sameSite: 'lax',
+      domain: isProduction ? '.eyupkaratas.dev' : undefined,
       path: '/',
-      maxAge: 8000 * 60 * 60, // 8 saat
+      maxAge: 8 * 60 * 60 * 1000, // 8 hours
     });
 
     return { message: 'Login successful' };
   }
+
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('token'); // token cookiesini sil / daha güvenli yol için token dbde tutulup logoutta revoked olarak işaretlenebilir fakat bu proje için gereksiz
+    res.clearCookie('token');
     return { message: 'Logged out successfully' };
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Req() req) {
