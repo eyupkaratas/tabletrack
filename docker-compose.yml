@@ -25,7 +25,7 @@ services:
     env_file:
       - ./server/.env.docker
     command: >
-      sh -c "/wait-for-it.sh db:5432 -t 30 -- pnpm db:generate && pnpm db:migrate &&pnpm start:dev"
+      sh -c "/wait-for-it.sh db:5432 -t 5 -- pnpm db:generate && pnpm db:migrate &&pnpm start:dev"
 
   client:
     build:
