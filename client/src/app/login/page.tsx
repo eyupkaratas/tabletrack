@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
-  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+  /* console.log("API URL:", process.env.NEXT_PUBLIC_API_URL); */
   const [loading, setLoading] = useState(false);
   const {
     register,
