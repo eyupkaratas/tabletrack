@@ -20,7 +20,8 @@ async function bootstrap() {
       'https://tabletrack-rho.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
     credentials: true,
   });
   await app.listen(3001);
