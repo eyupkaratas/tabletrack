@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -13,7 +14,9 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
@@ -37,13 +40,28 @@ export function DataTable<TData, TValue>({
   data,
   tableName,
 }: DataTableProps<TData, TValue>) {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
   const table = useReactTable({
     data,
     columns,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(), //search
+    getPaginationRowModel: getPaginationRowModel(),
   });
+
+  useEffect(() => {
+    // reset to first page whenever the data set changes size
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, [data.length]);
 
   return (
     <div className="w-full">
@@ -142,6 +160,10 @@ export function DataTable<TData, TValue>({
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="flex items-center gap-2 sm:justify-end">
+          <span className="text-sm text-muted-foreground">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount() || 1}
+          </span>
           <Button
             variant="outline"
             size="sm"
