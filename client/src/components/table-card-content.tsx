@@ -1,10 +1,13 @@
-import { TableCardContentProps } from "@/types";
+import { Order, TableCardContentProps } from "@/types";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import OrderCardContent from "./order-card-content";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
   const pageSize = 3;
 
   const relevantOrders = table.orders.filter(
@@ -38,6 +41,30 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
       classes: "border border-border/50 bg-muted/10 text-muted-foreground",
     };
   };
+
+  const handleOpenOrder = useCallback(
+    async (orderId: string) => {
+      if (isLoadingOrder) return;
+
+      setIsLoadingOrder(true);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`
+        );
+        if (!res.ok) {
+          throw new Error("Failed to load order");
+        }
+
+        const data: Order = await res.json();
+        setSelectedOrder(data);
+      } catch (error) {
+        console.error("Can't get order details:", error);
+      } finally {
+        setIsLoadingOrder(false);
+      }
+    },
+    [isLoadingOrder]
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 sm:py-10">
@@ -87,7 +114,11 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
                   );
 
                   return (
-                    <Card key={order.id} className="border border-border/50">
+                    <Card
+                      key={order.id}
+                      className="border border-border/50 cursor-pointer transition-transform hover:scale-[1.01]"
+                      onClick={() => handleOpenOrder(order.id)}
+                    >
                       <CardHeader className="py-3">
                         <CardTitle className="flex flex-col gap-2 text-sm font-semibold sm:flex-row sm:items-center sm:justify-between sm:text-base">
                           <span>Order #{displayNumber}</span>
@@ -131,6 +162,12 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
           )}
         </CardContent>
       </Card>
+      {selectedOrder && (
+        <OrderCardContent
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 };

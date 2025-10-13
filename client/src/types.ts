@@ -59,6 +59,11 @@ export type Order = {
   tableNumber: string;
 };
 
+export type OrderCardContentProps = {
+  order: Order;
+  onClose: () => void;
+};
+
 export type User = {
   id: string;
   name: string;

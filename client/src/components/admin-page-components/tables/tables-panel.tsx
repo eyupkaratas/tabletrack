@@ -45,7 +45,7 @@ const TablesPanel = () => {
             Table {table.number}
             <Badge
               className={
-                table.status === "available" ? "bg-green-500" : "bg-red-500"
+                table.status === "available" ? "bg-green-500" : "bg-orange-500"
               }
             >
               {table.status}
