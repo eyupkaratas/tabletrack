@@ -3,6 +3,28 @@ import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
+import { Client } from 'pg';
+
+async function testDbConnection() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
+  try {
+    await client.connect();
+    console.log('✅ Database connection successful');
+    const res = await client.query('SELECT NOW()');
+    console.log(res.rows[0]);
+  } catch (err) {
+    console.error('❌ Database connection failed:', err);
+  } finally {
+    await client.end();
+  }
+}
+
+testDbConnection();
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());

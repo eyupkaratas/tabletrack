@@ -23,6 +23,7 @@ export class OrdersService {
     const ords = await db
       .select({
         id: orders.id,
+        orderNumber: orders.orderNumber,
         orderStatus: orders.orderStatus,
         createdAt: orders.createdAt,
         closedAt: orders.closedAt,
@@ -61,12 +62,7 @@ export class OrdersService {
       items: items.filter((it) => it.orderId === ord.id),
     }));
 
-    const numbered = grouped.map((ord, index) => ({
-      ...ord,
-      orderNumber: grouped.length - index,
-    }));
-
-    return numbered;
+    return grouped;
   }
 
   async open(dto: OpenOrderDto) {
@@ -124,10 +120,23 @@ export class OrdersService {
         }
       }
 
+      // derive sequential order number (last + 1)
+      const [lastOrderNumberRow] = await tx
+        .select({
+          lastOrderNumber: sql<number>`coalesce(max(${orders.orderNumber}), 0)`,
+        })
+        .from(orders);
+      const nextOrderNumber = (lastOrderNumberRow?.lastOrderNumber ?? 0) + 1;
+
       // order
       const [ord] = await tx
         .insert(orders)
-        .values({ tableId, openedByUserId, orderStatus: 'open' })
+        .values({
+          tableId,
+          openedByUserId,
+          orderStatus: 'open',
+          orderNumber: nextOrderNumber,
+        })
         .returning();
 
       // items
@@ -160,6 +169,7 @@ export class OrdersService {
 
       return {
         id: ord.id,
+        orderNumber: ord.orderNumber,
         tableId,
         waiterName: usr.name,
         tableNumber: tbl.number,

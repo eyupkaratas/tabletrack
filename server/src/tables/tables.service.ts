@@ -112,6 +112,7 @@ export class TablesService {
     const ords = await db
       .select({
         id: orders.id,
+        orderNumber: orders.orderNumber,
         orderStatus: orders.orderStatus,
         createdAt: orders.createdAt,
         closedAt: orders.closedAt,
