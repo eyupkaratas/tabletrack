@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { OpenOrderDto } from './dto/open-order.dto';
 import { UpdateOrderItemStatusDto } from './dto/update-order-item-status.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -32,6 +33,13 @@ export class OrdersController {
   async close(@Body('orderId') orderId: string) {
     return this.svc.close(orderId);
   }
+  @Put(':id/status')
+  async updateOrderStatus(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateOrderStatusDto,
+  ) {
+    return this.svc.updateOrderStatus(id, dto.status);
+  }
   @Put('/order-items/:id/status')
   async updateOrderItemStatus(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -47,5 +55,9 @@ export class OrdersController {
     const valid = ['hourly', 'daily', 'weekly', 'monthly'];
     const mode = valid.includes(range) ? (range as any) : 'hourly';
     return this.svc.getUserOrderStats(mode, date);
+  }
+  @Get(':id')
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.svc.findOne(id);
   }
 }

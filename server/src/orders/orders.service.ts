@@ -64,6 +64,48 @@ export class OrdersService {
 
     return grouped;
   }
+  async findOne(id: string) {
+    const [ord] = await db
+      .select({
+        id: orders.id,
+        orderNumber: orders.orderNumber,
+        orderStatus: orders.orderStatus,
+        createdAt: orders.createdAt,
+        closedAt: orders.closedAt,
+        openedByUserId: orders.openedByUserId,
+        waiterName: users.name,
+        tableId: orders.tableId,
+        tableNumber: tables.number,
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.openedByUserId, users.id))
+      .leftJoin(tables, eq(orders.tableId, tables.id))
+      .where(eq(orders.id, id))
+      .limit(1);
+
+    if (!ord) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        unitPrice: orderItems.unitPrice,
+        status: orderItems.orderItemStatus,
+        productName: products.name,
+      })
+      .from(orderItems)
+      .where(eq(orderItems.orderId, ord.id))
+      .leftJoin(products, eq(products.id, orderItems.productId));
+
+    return {
+      ...ord,
+      items,
+    };
+  }
 
   async open(dto: OpenOrderDto) {
     const { tableId, openedByUserId, items } = dto;
@@ -212,6 +254,71 @@ export class OrdersService {
     this.notifications.sendOpenCount(openCount);
 
     return { message: 'Order closed successfully', orderId };
+  }
+
+  async updateOrderStatus(
+    orderId: string,
+    status: 'open' | 'completed' | 'closed',
+  ) {
+    const allowedStatuses: Array<'open' | 'completed' | 'closed'> = [
+      'open',
+      'completed',
+      'closed',
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      throw new BadRequestException('Invalid order status');
+    }
+
+    const [existing] = await db
+      .select({
+        id: orders.id,
+        orderStatus: orders.orderStatus,
+      })
+      .from(orders)
+      .where(eq(orders.id, orderId))
+      .limit(1);
+
+    if (!existing) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    if (status === 'completed') {
+      const [pending] = await db
+        .select({
+          count: sql<number>`count(*)`,
+        })
+        .from(orderItems)
+        .where(
+          and(
+            eq(orderItems.orderId, orderId),
+            eq(orderItems.orderItemStatus, 'placed'),
+          ),
+        );
+
+      if (pending?.count && Number(pending.count) > 0) {
+        throw new BadRequestException(
+          'Order still has items waiting to be served.',
+        );
+      }
+    }
+
+    const [updated] = await db
+      .update(orders)
+      .set({ orderStatus: status })
+      .where(eq(orders.id, orderId))
+      .returning({
+        id: orders.id,
+        orderStatus: orders.orderStatus,
+      });
+
+    const openCount = await this.getOpenCount();
+    this.notifications.sendOpenCount(openCount);
+
+    return {
+      message: 'Order status updated successfully',
+      order: updated,
+    };
   }
 
   async updateOrderItemStatus(

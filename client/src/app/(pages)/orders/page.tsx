@@ -1,4 +1,5 @@
 "use client";
+import OrderCardContent from "@/components/order-card-content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -34,17 +35,18 @@ const OrdersPage = () => {
       window.removeEventListener("orderCreated", handleOrderCreated);
     };
   }, [fetchOrders]);
-  /* const handleOpenTable = async (id: string) => {
+
+  const handleOpenOrder = async (id: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/orders/${id}/details`
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`
       );
       const data = await res.json();
       setSelectedOrder(data);
     } catch (err) {
-      console.error("Can't get table details:", err);
+      console.error("Can't get order details:", err);
     }
-  }; */
+  };
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
@@ -61,7 +63,10 @@ const OrdersPage = () => {
                 transition={{ duration: 0.3 }}
                 className="w-full"
               >
-                <Card className="border-2 cursor-pointer border-gray-500 transition-transform duration-200 hover:scale-105">
+                <Card
+                  className="border-2 cursor-pointer border-gray-500 transition-transform duration-200 hover:scale-105"
+                  onClick={() => handleOpenOrder(order.id)}
+                >
                   <CardHeader>
                     <CardTitle className="flex justify-between text-sm sm:text-base">
                       <span>Order #{order.orderNumber}</span>
@@ -82,6 +87,12 @@ const OrdersPage = () => {
             ))}
         </AnimatePresence>
       </div>
+      {selectedOrder && (
+        <OrderCardContent
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 };
