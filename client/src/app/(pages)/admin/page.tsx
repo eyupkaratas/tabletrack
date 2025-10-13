@@ -3,6 +3,7 @@
 import ProductsTable from "@/components/admin-page-components/products/products-table";
 import UsersTable from "@/components/admin-page-components/users/users-table";
 
+import TablesPanel from "@/components/admin-page-components/tables/tables-panel";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 
@@ -26,12 +27,15 @@ const AdminPage = () => {
         return <UsersTable />;
       case "products":
         return <ProductsTable />;
+      case "tables":
+        return <TablesPanel />;
       default:
         return <div>Select a section</div>;
     }
   };
   return (
     <div className="flex w-full flex-col gap-4 rounded-md border-2 p-4 md:flex-row md:gap-6">
+      {/* SIDEBAR */}
       <div className="flex w-full flex-wrap items-center gap-2 rounded-md bg-sidebar p-2 md:w-56 md:flex-col md:items-stretch">
         <button
           onClick={() => setContent("users")}
@@ -51,7 +55,16 @@ const AdminPage = () => {
           Products
         </button>
         <Separator className="hidden md:block" />
+        <button
+          onClick={() => setContent("tables")}
+          className={`w-full cursor-pointer rounded-md px-3 py-2 text-center text-sm font-semibold transition hover:bg-sidebar-accent ${
+            content === "tables" ? "bg-sidebar-accent" : ""
+          }`}
+        >
+          Tables
+        </button>
       </div>
+      {/* CONTENT */}
       <div className="flex-1 rounded-md border border-border/60 p-2 md:border-none md:p-0">
         {renderContent()}
       </div>
