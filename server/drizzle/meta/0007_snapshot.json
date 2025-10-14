@@ -513,8 +513,7 @@
                                                              "open",
                                                              "paid",
                                                              "completed",
-                                                             "cancelled",
-                                                             "closed"
+                                                             "cancelled"
                                                          ]
                                           },
                   "public.payment_method":  {
