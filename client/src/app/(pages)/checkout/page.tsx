@@ -163,6 +163,14 @@ export default function CheckoutPage() {
     [enrichedOrders, selectedOrderId]
   );
 
+  const selectedOrderIsCancelled =
+    selectedOrder?.orderStatus === "cancelled";
+  const selectedOrderBadgeLabel = selectedOrder
+    ? selectedOrderIsCancelled
+      ? "Order Cancelled"
+      : formatStatus(selectedOrder.orderStatus)
+    : "";
+
   const selectedOrders = useMemo(
     () =>
       enrichedOrders.filter((order) => selectedOrderIds.includes(order.id)),
@@ -175,7 +183,14 @@ export default function CheckoutPage() {
   );
 
   const tableTotal = useMemo(
-    () => enrichedOrders.reduce((sum, order) => sum + order.derivedTotal, 0),
+    () =>
+      enrichedOrders.reduce((sum, order) => {
+        if (order.orderStatus === "cancelled") {
+          return sum;
+        }
+
+        return sum + order.derivedTotal;
+      }, 0),
     [enrichedOrders]
   );
 
@@ -289,12 +304,12 @@ export default function CheckoutPage() {
       await Promise.all(
         targets.map(async (order) => {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/orders/${order.id}/status`,
+            `${process.env.NEXT_PUBLIC_API_URL}/orders/close`,
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               credentials: "include",
-              body: JSON.stringify({ status: "cancelled" }),
+              body: JSON.stringify({ orderId: order.id }),
             }
           );
           if (!res.ok) {
@@ -391,6 +406,10 @@ export default function CheckoutPage() {
                       const badgeStyle =
                         statusStyles[order.orderStatus] ??
                         "border border-border/60 bg-muted text-muted-foreground";
+                      const isCancelled = order.orderStatus === "cancelled";
+                      const badgeLabel = isCancelled
+                        ? "Order Cancelled"
+                        : formatStatus(order.orderStatus);
 
                       return (
                         <div
@@ -445,7 +464,7 @@ export default function CheckoutPage() {
                               variant="outline"
                               className={`capitalize ${badgeStyle}`}
                             >
-                              {formatStatus(order.orderStatus)}
+                              {badgeLabel}
                             </Badge>
                           </div>
                           <Separator className="my-2" />
@@ -453,7 +472,13 @@ export default function CheckoutPage() {
                             <span className="text-muted-foreground">
                               Total
                             </span>
-                            <span className="font-semibold">
+                            <span
+                              className={`font-semibold ${
+                                isCancelled
+                                  ? "line-through text-muted-foreground"
+                                  : ""
+                              }`}
+                            >
                               {formatCurrency(order.derivedTotal)}
                             </span>
                           </div>
@@ -482,9 +507,14 @@ export default function CheckoutPage() {
                                 "border border-border/60 bg-muted text-muted-foreground"
                               }`}
                             >
-                              {formatStatus(selectedOrder.orderStatus)}
+                              {selectedOrderBadgeLabel}
                             </Badge>
                           </div>
+                          {selectedOrderIsCancelled && (
+                            <p className="text-xs text-muted-foreground">
+                              This order is cancelled and excluded from totals.
+                            </p>
+                          )}
                           <div className="text-xs text-muted-foreground">
                             Opened at:{" "}
                             {new Date(
@@ -551,7 +581,13 @@ export default function CheckoutPage() {
                           <span className="text-muted-foreground">
                             Order Total
                           </span>
-                          <span className="text-base font-semibold">
+                          <span
+                            className={`text-base font-semibold ${
+                              selectedOrderIsCancelled
+                                ? "line-through text-muted-foreground"
+                                : ""
+                            }`}
+                          >
                             {formatCurrency(selectedOrder.derivedTotal)}
                           </span>
                         </div>

@@ -5,7 +5,7 @@ type OrderStatusEnum = (typeof orderStatus.enumValues)[number];
 
 export class UpdateOrderStatusDto {
   @IsEnum(orderStatus.enumValues, {
-    message: 'Status must be one of open, completed, closed',
+    message: 'Status must be one of open, paid, completed, cancelled',
   })
   status: OrderStatusEnum;
 }

@@ -50,6 +50,13 @@
       "when": 1760281590010,
       "tag": "0006_consistent_order_numbers",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760461730000,
+      "tag": "0007_cancelled_order_status",
+      "breakpoints": true
     }
   ]
 }

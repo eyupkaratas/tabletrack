@@ -11,7 +11,10 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
   const pageSize = 3;
 
   const relevantOrders = table.orders.filter(
-    (order) => order.orderStatus === "open" || order.orderStatus === "completed"
+    (order) =>
+      order.orderStatus === "open" ||
+      order.orderStatus === "completed" ||
+      order.orderStatus === "cancelled"
   );
 
   const totalPages = Math.ceil(relevantOrders.length / pageSize);
@@ -33,6 +36,13 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
         label: "completed",
         classes:
           "border border-emerald-500/50 bg-emerald-500/10 text-emerald-600",
+      };
+    }
+
+    if (status === "cancelled") {
+      return {
+        label: "Order Cancelled",
+        classes: "border border-rose-500/50 bg-rose-500/10 text-rose-600",
       };
     }
 
@@ -98,11 +108,14 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
               paginatedOrders
                 .slice() // show open orders first, then completed ones
                 .sort((a, b) => {
-                  if (a.orderStatus === "open" && b.orderStatus === "completed")
-                    return -1;
-                  if (a.orderStatus === "completed" && b.orderStatus === "open")
-                    return 1;
-                  return 0;
+                  const priority = (status: string) => {
+                    if (status === "open") return 0;
+                    if (status === "completed") return 1;
+                    if (status === "cancelled") return 2;
+                    return 3;
+                  };
+
+                  return priority(a.orderStatus) - priority(b.orderStatus);
                 })
                 .map((order, index) => {
                   const { label, classes } = getOrderStatusInfo(
