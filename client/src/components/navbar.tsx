@@ -37,6 +37,17 @@ const Navbar = () => {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    const handleProductsUpdated = () => {
+      fetchData();
+    };
+
+    window.addEventListener("productsUpdated", handleProductsUpdated);
+    return () => {
+      window.removeEventListener("productsUpdated", handleProductsUpdated);
+    };
+  }, [fetchData]);
+
   const handleOrderSuccess = useCallback(async () => {
     await fetchData();
 
