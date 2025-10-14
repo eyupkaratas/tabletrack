@@ -10,7 +10,9 @@ const TablesPanel = () => {
 
   const fetchTables = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`, {
+        credentials: "include",
+      });
       const data = await res.json();
       setTables(data);
     } catch (error) {
@@ -36,7 +38,7 @@ const TablesPanel = () => {
         </span>
       </div>
 
-      <div className="w-full grid grid-cols-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 border-2 overflow-hidden">
+      <div className="w-full flex flex-wrap gap-2 border-2 p-2 justify-start">
         {tables.map((table) => (
           <div
             key={table.id}

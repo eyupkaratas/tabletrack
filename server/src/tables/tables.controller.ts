@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { Roles } from 'src/auth/roles.decorator';
 import { TablesService } from './tables.service';
 
 @Controller('tables')
@@ -29,6 +30,7 @@ export class TablesController {
   }
 
   @Post()
+  @Roles('admin', 'manager')
   createNext() {
     return this.svc.createNext();
   }
@@ -39,6 +41,7 @@ export class TablesController {
   }
 
   @Delete('last')
+  @Roles('admin', 'manager')
   removeLast() {
     return this.svc.removeLast();
   }

@@ -49,7 +49,8 @@ const TableCardContent = ({ table, onClose }: TableCardContentProps) => {
       setIsLoadingOrder(true);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`,
+          { credentials: "include" }
         );
         if (!res.ok) {
           throw new Error("Failed to load order");

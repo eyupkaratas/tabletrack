@@ -11,7 +11,9 @@ const OrdersPage = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
+        credentials: "include",
+      });
       const data = await res.json();
       setOrders(data);
     } catch (error) {
@@ -39,7 +41,8 @@ const OrdersPage = () => {
   const handleOpenOrder = async (id: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`,
+        { credentials: "include" }
       );
       const data = await res.json();
       setSelectedOrder(data);

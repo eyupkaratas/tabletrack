@@ -108,6 +108,7 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({ status }),
           }
         );
@@ -149,6 +150,7 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ status: "completed" }),
         }
       );

@@ -1,31 +1,20 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt.guard';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     // Validate user credentials
-    const user = await this.authService.validateUser(
-      body.email,
-      body.password,
-    );
+    const user = await this.authService.validateUser(body.email, body.password);
 
     // Create JWT token
     const token = await this.authService.login(user);
@@ -49,8 +38,6 @@ export class AuthController {
     res.clearCookie('token');
     return { message: 'Logged out successfully' };
   }
-
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Req() req) {
     return this.authService.getProfile(req.user.sub);
