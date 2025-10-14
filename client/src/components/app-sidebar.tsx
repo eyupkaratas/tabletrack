@@ -88,7 +88,7 @@ export default function AppSidebar() {
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
         </SidebarMenuButton>
         <SidebarMenuButton
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push("/checkout")}
           className="cursor-pointer"
         >
           <Banknote className="w-7 h-7" strokeWidth={2} />

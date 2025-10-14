@@ -29,7 +29,7 @@ const Navbar = () => {
       setTables(tablesData);
       setProducts(productsData);
     } catch (error) {
-      console.error("Navbar verileri alinmadi:", error);
+      console.error("Failed to load navbar data:", error);
     }
   }, []);
 
