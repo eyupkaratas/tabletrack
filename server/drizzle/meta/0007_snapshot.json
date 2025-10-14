@@ -1,0 +1,586 @@
+{
+    "id":  "54ad3c29-5f8f-4aa1-94f0-4f840ec11b05",
+    "prevId":  "e1e7c4ed-4d39-47b0-b87b-5d938be56ff1",
+    "version":  "7",
+    "dialect":  "postgresql",
+    "tables":  {
+                   "public.order_items":  {
+                                              "name":  "order_items",
+                                              "schema":  "",
+                                              "columns":  {
+                                                              "id":  {
+                                                                         "name":  "id",
+                                                                         "type":  "uuid",
+                                                                         "primaryKey":  true,
+                                                                         "notNull":  true,
+                                                                         "default":  "gen_random_uuid()"
+                                                                     },
+                                                              "order_id":  {
+                                                                               "name":  "order_id",
+                                                                               "type":  "uuid",
+                                                                               "primaryKey":  false,
+                                                                               "notNull":  true
+                                                                           },
+                                                              "product_id":  {
+                                                                                 "name":  "product_id",
+                                                                                 "type":  "uuid",
+                                                                                 "primaryKey":  false,
+                                                                                 "notNull":  true
+                                                                             },
+                                                              "quantity":  {
+                                                                               "name":  "quantity",
+                                                                               "type":  "integer",
+                                                                               "primaryKey":  false,
+                                                                               "notNull":  true
+                                                                           },
+                                                              "unit_price":  {
+                                                                                 "name":  "unit_price",
+                                                                                 "type":  "numeric(10, 2)",
+                                                                                 "primaryKey":  false,
+                                                                                 "notNull":  true
+                                                                             },
+                                                              "item_status":  {
+                                                                                  "name":  "item_status",
+                                                                                  "type":  "item_status",
+                                                                                  "typeSchema":  "public",
+                                                                                  "primaryKey":  false,
+                                                                                  "notNull":  true,
+                                                                                  "default":  "\u0027placed\u0027"
+                                                                              }
+                                                          },
+                                              "indexes":  {
+
+                                                          },
+                                              "foreignKeys":  {
+                                                                  "order_items_order_id_orders_id_fk":  {
+                                                                                                            "name":  "order_items_order_id_orders_id_fk",
+                                                                                                            "tableFrom":  "order_items",
+                                                                                                            "tableTo":  "orders",
+                                                                                                            "columnsFrom":  [
+                                                                                                                                "order_id"
+                                                                                                                            ],
+                                                                                                            "columnsTo":  [
+                                                                                                                              "id"
+                                                                                                                          ],
+                                                                                                            "onDelete":  "no action",
+                                                                                                            "onUpdate":  "no action"
+                                                                                                        },
+                                                                  "order_items_product_id_products_id_fk":  {
+                                                                                                                "name":  "order_items_product_id_products_id_fk",
+                                                                                                                "tableFrom":  "order_items",
+                                                                                                                "tableTo":  "products",
+                                                                                                                "columnsFrom":  [
+                                                                                                                                    "product_id"
+                                                                                                                                ],
+                                                                                                                "columnsTo":  [
+                                                                                                                                  "id"
+                                                                                                                              ],
+                                                                                                                "onDelete":  "no action",
+                                                                                                                "onUpdate":  "no action"
+                                                                                                            }
+                                                              },
+                                              "compositePrimaryKeys":  {
+
+                                                                       },
+                                              "uniqueConstraints":  {
+
+                                                                    },
+                                              "policies":  {
+
+                                                           },
+                                              "checkConstraints":  {
+
+                                                                   },
+                                              "isRLSEnabled":  false
+                                          },
+                   "public.orders":  {
+                                         "name":  "orders",
+                                         "schema":  "",
+                                         "columns":  {
+                                                         "id":  {
+                                                                    "name":  "id",
+                                                                    "type":  "uuid",
+                                                                    "primaryKey":  true,
+                                                                    "notNull":  true,
+                                                                    "default":  "gen_random_uuid()"
+                                                                },
+                                                         "table_id":  {
+                                                                          "name":  "table_id",
+                                                                          "type":  "uuid",
+                                                                          "primaryKey":  false,
+                                                                          "notNull":  true
+                                                                      },
+                                                         "order_status":  {
+                                                                              "name":  "order_status",
+                                                                              "type":  "order_status",
+                                                                              "typeSchema":  "public",
+                                                                              "primaryKey":  false,
+                                                                              "notNull":  true,
+                                                                              "default":  "\u0027open\u0027"
+                                                                          },
+                                                         "user_id":  {
+                                                                         "name":  "user_id",
+                                                                         "type":  "uuid",
+                                                                         "primaryKey":  false,
+                                                                         "notNull":  true
+                                                                     },
+                                                         "created_at":  {
+                                                                            "name":  "created_at",
+                                                                            "type":  "timestamp with time zone",
+                                                                            "primaryKey":  false,
+                                                                            "notNull":  false,
+                                                                            "default":  "now()"
+                                                                        },
+                                                         "closed_at":  {
+                                                                           "name":  "closed_at",
+                                                                           "type":  "timestamp with time zone",
+                                                                           "primaryKey":  false,
+                                                                           "notNull":  false,
+                                                                           "default":  "now()"
+                                                                       },
+                                                         "total":  {
+                                                                       "name":  "total",
+                                                                       "type":  "numeric(10, 2)",
+                                                                       "primaryKey":  false,
+                                                                       "notNull":  false,
+                                                                       "default":  "\u00270\u0027"
+                                                                   },
+                                                         "order_number":  {
+                                                                              "name":  "order_number",
+                                                                              "type":  "integer",
+                                                                              "primaryKey":  false,
+                                                                              "notNull":  true,
+                                                                              "default":  "nextval(\u0027orders_order_number_seq\u0027::regclass)"
+                                                                          }
+                                                     },
+                                         "indexes":  {
+
+                                                     },
+                                         "foreignKeys":  {
+                                                             "orders_table_id_tables_id_fk":  {
+                                                                                                  "name":  "orders_table_id_tables_id_fk",
+                                                                                                  "tableFrom":  "orders",
+                                                                                                  "tableTo":  "tables",
+                                                                                                  "columnsFrom":  [
+                                                                                                                      "table_id"
+                                                                                                                  ],
+                                                                                                  "columnsTo":  [
+                                                                                                                    "id"
+                                                                                                                ],
+                                                                                                  "onDelete":  "no action",
+                                                                                                  "onUpdate":  "no action"
+                                                                                              },
+                                                             "orders_user_id_users_id_fk":  {
+                                                                                                "name":  "orders_user_id_users_id_fk",
+                                                                                                "tableFrom":  "orders",
+                                                                                                "tableTo":  "users",
+                                                                                                "columnsFrom":  [
+                                                                                                                    "user_id"
+                                                                                                                ],
+                                                                                                "columnsTo":  [
+                                                                                                                  "id"
+                                                                                                              ],
+                                                                                                "onDelete":  "no action",
+                                                                                                "onUpdate":  "no action"
+                                                                                            }
+                                                         },
+                                         "compositePrimaryKeys":  {
+
+                                                                  },
+                                         "uniqueConstraints":  {
+                                                                   "orders_order_number_unique":  {
+                                                                                                      "name":  "orders_order_number_unique",
+                                                                                                      "columns":  [
+                                                                                                                      "order_number"
+                                                                                                                  ],
+                                                                                                      "nullsNotDistinct":  false
+                                                                                                  }
+                                                               },
+                                         "policies":  {
+
+                                                      },
+                                         "checkConstraints":  {
+
+                                                              },
+                                         "isRLSEnabled":  false
+                                     },
+                   "public.payments":  {
+                                           "name":  "payments",
+                                           "schema":  "",
+                                           "columns":  {
+                                                           "id":  {
+                                                                      "name":  "id",
+                                                                      "type":  "uuid",
+                                                                      "primaryKey":  true,
+                                                                      "notNull":  true,
+                                                                      "default":  "gen_random_uuid()"
+                                                                  },
+                                                           "order_id":  {
+                                                                            "name":  "order_id",
+                                                                            "type":  "uuid",
+                                                                            "primaryKey":  false,
+                                                                            "notNull":  true
+                                                                        },
+                                                           "amount":  {
+                                                                          "name":  "amount",
+                                                                          "type":  "numeric(10, 2)",
+                                                                          "primaryKey":  false,
+                                                                          "notNull":  true
+                                                                      },
+                                                           "method":  {
+                                                                          "name":  "method",
+                                                                          "type":  "payment_method",
+                                                                          "typeSchema":  "public",
+                                                                          "primaryKey":  false,
+                                                                          "notNull":  true
+                                                                      },
+                                                           "paid_at":  {
+                                                                           "name":  "paid_at",
+                                                                           "type":  "timestamp with time zone",
+                                                                           "primaryKey":  false,
+                                                                           "notNull":  false,
+                                                                           "default":  "now()"
+                                                                       }
+                                                       },
+                                           "indexes":  {
+
+                                                       },
+                                           "foreignKeys":  {
+                                                               "payments_order_id_orders_id_fk":  {
+                                                                                                      "name":  "payments_order_id_orders_id_fk",
+                                                                                                      "tableFrom":  "payments",
+                                                                                                      "tableTo":  "orders",
+                                                                                                      "columnsFrom":  [
+                                                                                                                          "order_id"
+                                                                                                                      ],
+                                                                                                      "columnsTo":  [
+                                                                                                                        "id"
+                                                                                                                    ],
+                                                                                                      "onDelete":  "no action",
+                                                                                                      "onUpdate":  "no action"
+                                                                                                  }
+                                                           },
+                                           "compositePrimaryKeys":  {
+
+                                                                    },
+                                           "uniqueConstraints":  {
+
+                                                                 },
+                                           "policies":  {
+
+                                                        },
+                                           "checkConstraints":  {
+
+                                                                },
+                                           "isRLSEnabled":  false
+                                       },
+                   "public.products":  {
+                                           "name":  "products",
+                                           "schema":  "",
+                                           "columns":  {
+                                                           "id":  {
+                                                                      "name":  "id",
+                                                                      "type":  "uuid",
+                                                                      "primaryKey":  true,
+                                                                      "notNull":  true,
+                                                                      "default":  "gen_random_uuid()"
+                                                                  },
+                                                           "name":  {
+                                                                        "name":  "name",
+                                                                        "type":  "text",
+                                                                        "primaryKey":  false,
+                                                                        "notNull":  true
+                                                                    },
+                                                           "category":  {
+                                                                            "name":  "category",
+                                                                            "type":  "text",
+                                                                            "primaryKey":  false,
+                                                                            "notNull":  false
+                                                                        },
+                                                           "price":  {
+                                                                         "name":  "price",
+                                                                         "type":  "numeric(10, 2)",
+                                                                         "primaryKey":  false,
+                                                                         "notNull":  true
+                                                                     },
+                                                           "is_active":  {
+                                                                             "name":  "is_active",
+                                                                             "type":  "boolean",
+                                                                             "primaryKey":  false,
+                                                                             "notNull":  true,
+                                                                             "default":  true
+                                                                         },
+                                                           "created_at":  {
+                                                                              "name":  "created_at",
+                                                                              "type":  "timestamp with time zone",
+                                                                              "primaryKey":  false,
+                                                                              "notNull":  true,
+                                                                              "default":  "now()"
+                                                                          }
+                                                       },
+                                           "indexes":  {
+                                                           "products_name_unique":  {
+                                                                                        "name":  "products_name_unique",
+                                                                                        "columns":  [
+                                                                                                        {
+                                                                                                            "expression":  "name",
+                                                                                                            "isExpression":  false,
+                                                                                                            "asc":  true,
+                                                                                                            "nulls":  "last"
+                                                                                                        }
+                                                                                                    ],
+                                                                                        "isUnique":  true,
+                                                                                        "concurrently":  false,
+                                                                                        "method":  "btree",
+                                                                                        "with":  {
+
+                                                                                                 }
+                                                                                    }
+                                                       },
+                                           "foreignKeys":  {
+
+                                                           },
+                                           "compositePrimaryKeys":  {
+
+                                                                    },
+                                           "uniqueConstraints":  {
+
+                                                                 },
+                                           "policies":  {
+
+                                                        },
+                                           "checkConstraints":  {
+
+                                                                },
+                                           "isRLSEnabled":  false
+                                       },
+                   "public.tables":  {
+                                         "name":  "tables",
+                                         "schema":  "",
+                                         "columns":  {
+                                                         "id":  {
+                                                                    "name":  "id",
+                                                                    "type":  "uuid",
+                                                                    "primaryKey":  true,
+                                                                    "notNull":  true,
+                                                                    "default":  "gen_random_uuid()"
+                                                                },
+                                                         "number":  {
+                                                                        "name":  "number",
+                                                                        "type":  "integer",
+                                                                        "primaryKey":  false,
+                                                                        "notNull":  true,
+                                                                        "identity":  {
+                                                                                         "type":  "byDefault",
+                                                                                         "name":  "tables_number_seq",
+                                                                                         "schema":  "public",
+                                                                                         "increment":  "1",
+                                                                                         "startWith":  "1",
+                                                                                         "minValue":  "1",
+                                                                                         "maxValue":  "2147483647",
+                                                                                         "cache":  "1",
+                                                                                         "cycle":  false
+                                                                                     }
+                                                                    },
+                                                         "status":  {
+                                                                        "name":  "status",
+                                                                        "type":  "table_status",
+                                                                        "typeSchema":  "public",
+                                                                        "primaryKey":  false,
+                                                                        "notNull":  true,
+                                                                        "default":  "\u0027available\u0027"
+                                                                    },
+                                                         "created_at":  {
+                                                                            "name":  "created_at",
+                                                                            "type":  "timestamp with time zone",
+                                                                            "primaryKey":  false,
+                                                                            "notNull":  true,
+                                                                            "default":  "now()"
+                                                                        }
+                                                     },
+                                         "indexes":  {
+
+                                                     },
+                                         "foreignKeys":  {
+
+                                                         },
+                                         "compositePrimaryKeys":  {
+
+                                                                  },
+                                         "uniqueConstraints":  {
+                                                                   "tables_number_unique":  {
+                                                                                                "name":  "tables_number_unique",
+                                                                                                "nullsNotDistinct":  false,
+                                                                                                "columns":  [
+                                                                                                                "number"
+                                                                                                            ]
+                                                                                            }
+                                                               },
+                                         "policies":  {
+
+                                                      },
+                                         "checkConstraints":  {
+
+                                                              },
+                                         "isRLSEnabled":  false
+                                     },
+                   "public.users":  {
+                                        "name":  "users",
+                                        "schema":  "",
+                                        "columns":  {
+                                                        "id":  {
+                                                                   "name":  "id",
+                                                                   "type":  "uuid",
+                                                                   "primaryKey":  true,
+                                                                   "notNull":  true,
+                                                                   "default":  "gen_random_uuid()"
+                                                               },
+                                                        "name":  {
+                                                                     "name":  "name",
+                                                                     "type":  "text",
+                                                                     "primaryKey":  false,
+                                                                     "notNull":  true
+                                                                 },
+                                                        "email":  {
+                                                                      "name":  "email",
+                                                                      "type":  "text",
+                                                                      "primaryKey":  false,
+                                                                      "notNull":  true
+                                                                  },
+                                                        "password":  {
+                                                                         "name":  "password",
+                                                                         "type":  "text",
+                                                                         "primaryKey":  false,
+                                                                         "notNull":  true
+                                                                     },
+                                                        "role":  {
+                                                                     "name":  "role",
+                                                                     "type":  "role",
+                                                                     "typeSchema":  "public",
+                                                                     "primaryKey":  false,
+                                                                     "notNull":  true,
+                                                                     "default":  "\u0027waiter\u0027"
+                                                                 },
+                                                        "created_at":  {
+                                                                           "name":  "created_at",
+                                                                           "type":  "timestamp with time zone",
+                                                                           "primaryKey":  false,
+                                                                           "notNull":  true,
+                                                                           "default":  "now()"
+                                                                       }
+                                                    },
+                                        "indexes":  {
+
+                                                    },
+                                        "foreignKeys":  {
+
+                                                        },
+                                        "compositePrimaryKeys":  {
+
+                                                                 },
+                                        "uniqueConstraints":  {
+                                                                  "users_email_unique":  {
+                                                                                             "name":  "users_email_unique",
+                                                                                             "nullsNotDistinct":  false,
+                                                                                             "columns":  [
+                                                                                                             "email"
+                                                                                                         ]
+                                                                                         }
+                                                              },
+                                        "policies":  {
+
+                                                     },
+                                        "checkConstraints":  {
+
+                                                             },
+                                        "isRLSEnabled":  false
+                                    }
+               },
+    "enums":  {
+                  "public.item_status":  {
+                                             "name":  "item_status",
+                                             "schema":  "public",
+                                             "values":  [
+                                                            "placed",
+                                                            "served",
+                                                            "cancelled"
+                                                        ]
+                                         },
+                  "public.order_status":  {
+                                              "name":  "order_status",
+                                              "schema":  "public",
+                                              "values":  [
+                                                             "open",
+                                                             "paid",
+                                                             "completed",
+                                                             "cancelled",
+                                                             "closed"
+                                                         ]
+                                          },
+                  "public.payment_method":  {
+                                                "name":  "payment_method",
+                                                "schema":  "public",
+                                                "values":  [
+                                                               "cash",
+                                                               "card"
+                                                           ]
+                                            },
+                  "public.role":  {
+                                      "name":  "role",
+                                      "schema":  "public",
+                                      "values":  [
+                                                     "admin",
+                                                     "manager",
+                                                     "waiter"
+                                                 ]
+                                  },
+                  "public.table_status":  {
+                                              "name":  "table_status",
+                                              "schema":  "public",
+                                              "values":  [
+                                                             "available",
+                                                             "active"
+                                                         ]
+                                          }
+              },
+    "schemas":  {
+
+                },
+    "sequences":  {
+                      "public.orders_order_number_seq":  {
+                                                             "startWith":  "1",
+                                                             "increment":  "1",
+                                                             "maxValue":  "2147483647",
+                                                             "minValue":  "1",
+                                                             "name":  "orders_order_number_seq",
+                                                             "cache":  "1",
+                                                             "schema":  "public",
+                                                             "ownedBy":  {
+                                                                             "table":  "orders",
+                                                                             "schema":  "public",
+                                                                             "column":  "order_number"
+                                                                         },
+                                                             "cycle":  false
+                                                         }
+                  },
+    "roles":  {
+
+              },
+    "policies":  {
+
+                 },
+    "views":  {
+
+              },
+    "_meta":  {
+                  "columns":  {
+
+                              },
+                  "schemas":  {
+
+                              },
+                  "tables":  {
+
+                             }
+              }
+}

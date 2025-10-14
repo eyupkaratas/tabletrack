@@ -41,23 +41,40 @@ const ensureStatus = (status: string): OrderItemStatus =>
 const formatStatusLabel = (status: string) =>
   status ? status.charAt(0).toUpperCase() + status.slice(1) : status;
 
+const formatOrderStatus = (status: string) => {
+  if (!status) {
+    return status;
+  }
+
+  if (status === "cancelled") {
+    return "Order Cancelled";
+  }
+
+  return status.toUpperCase();
+};
+
+const currencyFormatter = new Intl.NumberFormat("tr-TR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 const formatCurrency = (value: string | number | null | undefined) => {
   if (value === null || value === undefined) {
     return "-";
   }
 
-  const output =
-    typeof value === "string" && value.trim().length > 0
+  const numericValue =
+    typeof value === "number"
       ? value
-      : typeof value === "number" && Number.isFinite(value)
-      ? value.toString()
-      : "";
+      : typeof value === "string" && value.trim().length > 0
+      ? Number(value)
+      : NaN;
 
-  if (!output) {
+  if (!Number.isFinite(numericValue)) {
     return "-";
   }
 
-  return `${output}\u20BA`;
+  return `${currencyFormatter.format(numericValue)} \u20BA`;
 };
 
 const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
@@ -65,6 +82,7 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
   const [currentStatus, setCurrentStatus] = useState(order.orderStatus);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     setItems(order.items);
@@ -177,6 +195,47 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
     }
   }, [currentStatus, hasPendingItems, order.id]);
 
+  const handleCancelOrder = useCallback(async () => {
+    if (currentStatus === "cancelled") {
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/close`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ orderId: order.id }),
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.message ?? "Unable to cancel order");
+      }
+
+      setCurrentStatus("cancelled");
+      toast.success("Order cancelled");
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("orderCreated"));
+      }
+    } catch (error) {
+      console.error("Can't cancel order:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Unable to cancel order"
+      );
+    } finally {
+      setIsCancelling(false);
+    }
+  }, [currentStatus, order.id]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 sm:py-10"
@@ -203,22 +262,35 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
                     ? "text-green-500"
                     : currentStatus === "completed"
                     ? "text-emerald-500"
+                    : currentStatus === "cancelled"
+                    ? "text-rose-500"
                     : "text-yellow-500"
                 }`}
               >
-                {currentStatus.toUpperCase()}
+                {formatOrderStatus(currentStatus)}
               </span>
 
-              {currentStatus !== "completed" && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="cursor-pointer mr-5"
-                  onClick={handleCompleteOrder}
-                  disabled={isCompleting}
-                >
-                  {isCompleting ? "Completing..." : "Complete Order"}
-                </Button>
+              {currentStatus === "open" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={handleCompleteOrder}
+                    disabled={isCompleting || isCancelling}
+                  >
+                    {isCompleting ? "Completing..." : "Complete Order"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="cursor-pointer"
+                    onClick={handleCancelOrder}
+                    disabled={isCancelling || isCompleting}
+                  >
+                    {isCancelling ? "Cancelling..." : "Cancel Order"}
+                  </Button>
+                </div>
               )}
             </div>
           </CardTitle>
@@ -254,10 +326,21 @@ const OrderCardContent = ({ order, onClose }: OrderCardContentProps) => {
                 <span className="text-xs uppercase tracking-wide text-muted-foreground">
                   Order Total
                 </span>
-                <span className="font-semibold">
+                <span
+                  className={`font-semibold ${
+                    currentStatus === "cancelled"
+                      ? "line-through text-muted-foreground"
+                      : ""
+                  }`}
+                >
                   {formatCurrency(derivedTotal)}
                 </span>
               </div>
+              {currentStatus === "cancelled" && (
+                <div className="sm:col-span-2 text-xs text-muted-foreground">
+                  This order is cancelled and excluded from checkout totals.
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
