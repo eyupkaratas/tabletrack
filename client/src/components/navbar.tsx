@@ -13,8 +13,12 @@ const Navbar = () => {
   const fetchData = useCallback(async () => {
     try {
       const [resTables, resProducts] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`, {
+          credentials: "include",
+        }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+          credentials: "include",
+        }),
       ]);
 
       const [tablesData, productsData] = await Promise.all([

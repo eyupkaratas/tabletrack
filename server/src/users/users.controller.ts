@@ -8,13 +8,12 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-/* @UseGuards(JwtAuthGuard)  */
+
 @Controller('users')
 export class UsersController {
   constructor(private readonly svc: UsersService) {}
@@ -30,17 +29,18 @@ export class UsersController {
   }
 
   @Post()
+  @Roles('admin', 'manager')
   create(@Body() dto: CreateUserDto) {
     return this.svc.create(dto);
   }
 
   @Patch(':id')
+  @Roles('admin', 'manager')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.svc.update(id, dto);
   }
-
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Roles('admin', 'manager')
   async remove(@Param('id') id: string, @Req() req) {
     if (req.user.sub === id) {
       throw new ForbiddenException('You cannot delete your own account');

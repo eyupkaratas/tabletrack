@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt.guard';
+import { RolesGuard } from './auth/roles.guard';
 
 import { NotificationsGateway } from './notifications/notifications.gateway';
 import { OrdersModule } from './orders/orders.module';
@@ -17,6 +21,16 @@ import { UsersModule } from './users/users.module';
     TablesModule,
     OrdersModule,
   ],
-  providers: [NotificationsGateway],
+  providers: [
+    NotificationsGateway,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard, // global
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard, // global
+    },
+  ],
 })
 export class AppModule {}

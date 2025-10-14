@@ -42,6 +42,7 @@ const ProductsTable = () => {
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ isActive: value }),
         }
       );

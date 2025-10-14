@@ -12,7 +12,9 @@ const TablesPage = () => {
 
   const fetchTables = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tables`, {
+        credentials: "include",
+      });
       const data = await res.json();
       setTables(data);
     } catch (error) {
@@ -40,7 +42,8 @@ const TablesPage = () => {
   const handleOpenTable = async (number: number) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/tables/${number}/details`
+        `${process.env.NEXT_PUBLIC_API_URL}/tables/${number}/details`,
+        { credentials: "include" }
       );
       const data = await res.json();
       setSelectedTable(data);
