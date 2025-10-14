@@ -12,7 +12,7 @@ const ProductsTable = () => {
 
   const broadcastProductsUpdated = () => {
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("productsUpdated"));
+      window.dispatchEvent(new Event("productsUpdated")); //navbarın dinlediği event
     }
   };
 
@@ -77,7 +77,10 @@ const ProductsTable = () => {
 
         {/* DataTable */}
         <DataTable
-          columns={productColumns(() => fetchProducts(true), handleStatusChange)}
+          columns={productColumns(
+            () => fetchProducts(true),
+            handleStatusChange
+          )}
           data={products}
           tableName={"Products"}
         />

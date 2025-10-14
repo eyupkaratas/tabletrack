@@ -246,25 +246,27 @@ export class OrdersService {
     // close order
     await db
       .update(orders)
-      .set({ orderStatus: 'closed', closedAt: new Date() })
+      .set({ orderStatus: 'cancelled', closedAt: new Date() })
       .where(eq(orders.id, orderId));
 
     // aktif sipariş sayısını güncelle ve frontende gönder
     const openCount = await this.getOpenCount();
     this.notifications.sendOpenCount(openCount);
 
-    return { message: 'Order closed successfully', orderId };
+    return { message: 'Order cancelled successfully', orderId };
   }
 
   async updateOrderStatus(
     orderId: string,
-    status: 'open' | 'completed' | 'closed',
+    status: 'open' | 'paid' | 'completed' | 'cancelled',
   ) {
-    const allowedStatuses: Array<'open' | 'completed' | 'closed'> = [
-      'open',
-      'completed',
-      'closed',
-    ];
+    const allowedStatuses: Array<'open' | 'paid' | 'completed' | 'cancelled'> =
+      [
+        'open',
+        'paid',
+        'completed',
+        'cancelled',
+      ];
 
     if (!allowedStatuses.includes(status)) {
       throw new BadRequestException('Invalid order status');

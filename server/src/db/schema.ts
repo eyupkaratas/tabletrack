@@ -54,8 +54,9 @@ export const products = pgTable(
 
 export const orderStatus = pgEnum('order_status', [
   'open',
+  'paid',
   'completed',
-  'closed',
+  'cancelled',
 ]);
 export const orderItemStatus = pgEnum('item_status', [
   'placed',
