@@ -101,14 +101,14 @@ export default function AboutSection() {
           <button
             type="button"
             onClick={handleScrollDown}
-            className="inline-flex items-center gap-2 rounded-xl cursor-pointer bg-yellow-500/90 px-7 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black shadow-[0_20px_40px_-24px_rgba(250,204,21,0.75)] transition hover:bg-yellow-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-base"
+            className="flex items-center px-6 py-3  text-yellow-500 bg-black/50 rounded-lg font-semibold hover:bg-black/90 transition animate-neon-pulse cursor-pointer"
           >
             Hear From Our Users
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="h-4 w-4"
+              className="h-4 w-4 ml-4"
             >
               <path d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" />
             </svg>
