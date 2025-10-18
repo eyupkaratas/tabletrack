@@ -1,9 +1,9 @@
 "use client";
 
-import ProductsTable from "@/components/admin-page-components/products/products-table";
-import UsersTable from "@/components/admin-page-components/users/users-table";
+import ProductsTable from "@/components/admin-page/products/products-table";
+import UsersTable from "@/components/admin-page/users/users-table";
 
-import TablesPanel from "@/components/admin-page-components/tables/tables-panel";
+import TablesPanel from "@/components/admin-page/tables/tables-panel";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 

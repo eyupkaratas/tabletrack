@@ -11,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         // cookie first
         (req: Request) => {
           const token = req?.cookies?.token;
-          if (token) console.log('✅ JWT from cookie detected');
+          /* if (token) console.log(' JWT from cookie detected'); */
           return token;
         },
         // Authorization header fallback
