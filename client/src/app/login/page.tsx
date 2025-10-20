@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
-  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+  /* console.log("API URL:", process.env.NEXT_PUBLIC_API_URL); */
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -59,8 +59,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-500 via-black to-red-700">
-      <Card className="w-full max-w-sm">
+    <div
+      style={{
+        backgroundImage: "url('/hero1.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+      className="min-h-screen flex items-center justify-center "
+    >
+      <Card className="w-full max-w-sm bg-black/90">
         <CardHeader>
           <CardTitle>Staff Login</CardTitle>
           <CardDescription>Staff-only login for TableTrack</CardDescription>

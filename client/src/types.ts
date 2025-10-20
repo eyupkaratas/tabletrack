@@ -25,6 +25,14 @@ export type TableWithOrders = {
   orders: Order[];
 };
 
+export type Tables = {
+  openOrdersCount: any;
+  id: string;
+  number: number;
+  status: string;
+  createdAt: string;
+};
+
 export type TableCardContentProps = {
   table: TableWithOrders;
   onClose: () => void;
@@ -46,9 +54,14 @@ export type Order = {
   createdAt: string;
   total: number;
   items: OrderItem[];
-  orderNumber: string;
+  orderNumber: number;
   tableId: string;
   tableNumber: string;
+};
+
+export type OrderCardContentProps = {
+  order: Order;
+  onClose: () => void;
 };
 
 export type User = {

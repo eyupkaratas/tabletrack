@@ -116,8 +116,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  .parallax {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
   :root {
     --chart-1: oklch(0.646 0.222 41.116);
@@ -133,4 +142,18 @@
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
   }
+}
+
+@keyframes neonPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(234, 179, 8, 1);
+  }
+}
+
+.animate-neon-pulse {
+  animation: neonPulse 1.8s ease-in-out infinite;
 }

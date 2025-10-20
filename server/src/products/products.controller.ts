@@ -9,6 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { Roles } from 'src/auth/roles.decorator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
@@ -32,11 +33,13 @@ export class ProductsController {
   }
 
   @Post()
+  @Roles('admin', 'manager')
   create(@Body() dto: CreateProductDto) {
     return this.svc.create(dto);
   }
 
   @Patch(':id')
+  @Roles('admin', 'manager')
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateProductDto,
@@ -45,6 +48,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Roles('admin', 'manager')
   remove(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.svc.remove(id);
   }

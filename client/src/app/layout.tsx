@@ -29,11 +29,12 @@ export default function RootLayout({
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           <Toaster position="top-center" richColors closeButton />
+
           {children}
         </ThemeProvider>
       </body>

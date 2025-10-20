@@ -3,12 +3,14 @@ import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3001");
+const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
 export function NotificationBell() {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/count/open`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/count/open`, {
+      credentials: "include",
+    })
       .then((res) => res.json())
       .then((n) => setCount(n))
       .catch(() => {});

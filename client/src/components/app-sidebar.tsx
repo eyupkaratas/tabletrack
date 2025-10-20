@@ -88,7 +88,7 @@ export default function AppSidebar() {
           <p className="group-data-[state=collapsed]:hidden">Tables</p>
         </SidebarMenuButton>
         <SidebarMenuButton
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push("/checkout")}
           className="cursor-pointer"
         >
           <Banknote className="w-7 h-7" strokeWidth={2} />
@@ -97,27 +97,24 @@ export default function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="space-y-1 py-2">
         {user?.role !== "waiter" && (
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="cursor-pointer"
-              onClick={() => router.push("/admin")}
-            >
-              <PanelLeft />
-              <p className="group-data-[state=collapsed]:hidden">Admin Panel</p>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )}
-        <SidebarMenuItem>
           <SidebarMenuButton
-            className="cursor-pointer text-red-500"
-            onClick={handleLogout}
+            className="cursor-pointer"
+            onClick={() => router.push("/admin")}
           >
-            <LogOut className="text-red-500" />
-            <p className="group-data-[state=collapsed]:hidden text-red-500">
-              Logout
-            </p>
+            <PanelLeft />
+            <p className="group-data-[state=collapsed]:hidden">Admin Panel</p>
           </SidebarMenuButton>
-        </SidebarMenuItem>
+        )}
+
+        <SidebarMenuButton
+          className="cursor-pointer text-red-500"
+          onClick={handleLogout}
+        >
+          <LogOut className="text-red-500" />
+          <p className="group-data-[state=collapsed]:hidden text-red-500">
+            Logout
+          </p>
+        </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>
   );

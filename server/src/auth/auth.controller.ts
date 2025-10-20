@@ -1,49 +1,43 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt.guard';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // Kullanıcıyı doğrula
+    // Validate user credentials
     const user = await this.authService.validateUser(body.email, body.password);
 
-    //Token üret
+    // Create JWT token
     const token = await this.authService.login(user);
 
-    //Cookie set et
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', token.access_token, {
       httpOnly: true,
-      secure: true, // prod’da true (HTTPS)
+      secure: isProduction,
       sameSite: 'lax',
+      domain: isProduction ? '.eyupkaratas.dev' : undefined,
       path: '/',
-      maxAge: 1000 * 60 * 60, // 1 saat
+      maxAge: 8 * 60 * 60 * 1000, // 8 hours
     });
 
     return { message: 'Login successful' };
   }
+
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('token'); // token cookiesini sil / daha güvenli yol için token dbde tutulup logoutta revoked olarak işaretlenebilir fakat bu proje için gereksiz
+    res.clearCookie('token');
     return { message: 'Logged out successfully' };
   }
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Req() req) {
     return this.authService.getProfile(req.user.sub);

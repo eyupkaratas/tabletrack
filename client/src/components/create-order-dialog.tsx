@@ -157,6 +157,7 @@ export default function CreateOrderDialog({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(body),
         }
       );

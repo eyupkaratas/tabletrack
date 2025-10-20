@@ -54,8 +54,9 @@ export const products = pgTable(
 
 export const orderStatus = pgEnum('order_status', [
   'open',
+  'paid',
   'completed',
-  'closed',
+  'cancelled',
 ]);
 export const orderItemStatus = pgEnum('item_status', [
   'placed',
@@ -75,6 +76,10 @@ export const orders = pgTable('orders', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   closedAt: timestamp('closed_at', { withTimezone: true }).defaultNow(),
   total: numeric('total', { precision: 10, scale: 2 }).default('0'),
+  orderNumber: integer('order_number')
+    .notNull()
+    .unique()
+    .default(sql`nextval('orders_order_number_seq')`),
 });
 
 export const orderItems = pgTable('order_items', {
