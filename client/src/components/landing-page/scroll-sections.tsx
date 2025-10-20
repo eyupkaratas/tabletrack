@@ -26,6 +26,8 @@ export default function ScrollSections() {
       const direction = Math.sign(event.deltaY);
       if (direction === 0) return;
 
+      if (index === sections.length - 1) return;
+
       const currentSection = sections[index];
       const sectionTop = currentSection.offsetTop;
       const sectionBottom = sectionTop + currentSection.offsetHeight;
@@ -77,7 +79,7 @@ export default function ScrollSections() {
       <section id="about" className="">
         <ThirdSection />
       </section>
-      <section id="footer" className="h-screen">
+      <section id="footer" className="min-h-screen">
         <FooterSection />
       </section>
     </main>
