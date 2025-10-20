@@ -30,7 +30,7 @@ export default function SecondSection() {
   return (
     <section
       id="second"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden text-white"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-white"
     >
       <div className="absolute inset-0 bg-[url('/hero1.jpg')] bg-cover bg-center" />
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" />

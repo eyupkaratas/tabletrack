@@ -25,7 +25,7 @@ const workflowSteps = [
   },
 ];
 
-export default function AboutSection() {
+export default function ThirdSection() {
   const handleScrollDown = () => {
     const nextSection = document.querySelector("section:nth-of-type(4)");
     if (nextSection) {

@@ -1,9 +1,9 @@
 "use client";
 import { useEffect } from "react";
-import AboutSection from "./about-section";
 import FooterSection from "./footer-section";
 import HeroSection from "./hero-section";
 import SecondSection from "./second-section";
+import ThirdSection from "./third-section";
 
 export default function ScrollSections() {
   useEffect(() => {
@@ -68,16 +68,16 @@ export default function ScrollSections() {
 
   return (
     <main>
-      <section id="hero" className="h-screen">
+      <section id="hero" className="">
         <HeroSection />
       </section>
-      <section id="second" className="h-screen">
+      <section id="second" className="">
         <SecondSection />
       </section>
-      <section id="about" className="h-screen">
-        <AboutSection />
+      <section id="about" className="">
+        <ThirdSection />
       </section>
-      <section id="footer" className="min-h-screen">
+      <section id="footer" className="h-screen">
         <FooterSection />
       </section>
     </main>
